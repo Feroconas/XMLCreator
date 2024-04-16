@@ -66,15 +66,12 @@ class XMLDocument(private val root: XMLElement) {
         if (tagNames.isEmpty())
             return elements
 
-        fun XMLElement.search(pointer: Int) {
-            if (tagNames[pointer] == tagName) {
-                if (pointer == tagNames.lastIndex) {
-                    elements.add(this)
-                    return
-                }
-                getChildren().forEach { it.search(pointer + 1) }
+        fun XMLElement.search(tagNamesIndex: Int) {
+            when {
+                tagNames[tagNamesIndex] != tagName -> getChildren().forEach { it.search(0) }
+                tagNamesIndex != tagNames.lastIndex -> getChildren().forEach { it.search(tagNamesIndex + 1) }
+                else -> elements.add(this)
             }
-            getChildren().forEach { it.search(0) }
         }
 
         root.search(0)
