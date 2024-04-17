@@ -74,7 +74,7 @@ class XMLDocumentTest {
 
     @Test
     fun addAttributeGlobally() {
-        document.addAttributeGlobally("av", "teste", "teste")
+        document.addAttributeGlobally("nao_existe", "teste", "teste")
         assertEquals(document.toString(), originalDocumentString)
 
         document.addAttributeGlobally("componente", "nome", "teste")
