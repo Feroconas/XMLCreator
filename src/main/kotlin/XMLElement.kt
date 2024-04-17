@@ -1,7 +1,7 @@
 class XMLElement(
     internal var tagName: String,
     private var tagText: String? = null,
-    private val parent: XMLElement? = null // TODO() Set null when removed from parent?
+    private val parent: XMLElement? = null // TODO() Set null when removed from parent? SIM
 ) {
     private val attributes = mutableListOf<XMLAttribute>()
     private val children = mutableListOf<XMLElement>()
@@ -14,7 +14,7 @@ class XMLElement(
         return tagName
     }
 
-    fun setTagName(tagName: String) {
+    fun setTagName(tagName: String) { //todo validar se o introduzido é correto
         this.tagName = tagName
     }
 
@@ -22,7 +22,7 @@ class XMLElement(
         return tagText
     }
 
-    fun setTagText(tagText: String?) {
+    fun setTagText(tagText: String?) { //todo validar se o introduzido é correto
         this.tagText = tagText
     }
 
@@ -35,6 +35,7 @@ class XMLElement(
     }
 
     fun addAttribute(name: String, value: String): Boolean {
+        //todo validar name (String) para ter a estrutura certa (nao pode ser string vazia, ou com espaços, etc)
         if (attributes.none { it.name == name }) {
             attributes.add(XMLAttribute(name, value))
             return true
@@ -64,7 +65,7 @@ class XMLElement(
         return children
     }
 
-    fun removeChild(childTagName: String): Boolean { // TODO Fazer com Visitor para remover os filhos (e netos, etc) dos elementos removidos?
+    fun removeChild(childTagName: String): Boolean { // TODO Fazer com Visitor para remover os filhos (e netos, etc) dos elementos removidos? Passar objeto
         val child = children.find { it.tagName == childTagName }
         child?.accept { it.children.clear() } ?: return false
         return true
