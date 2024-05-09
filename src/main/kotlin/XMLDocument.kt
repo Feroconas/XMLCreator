@@ -41,8 +41,12 @@ class XMLDocument(private val root: XMLElement) {
         root.accept { if (it.tagName == tagName) it.tagName = newTagName }
     }
 
-    fun removeElementGlobally(tagName: String) { // TODO() Isto funciona mas as "children" dos elementos removidos não são removidas
-        root.accept { it.getChildren().removeIf { child -> child.tagName == tagName } }
+    fun removeElementGlobally(tagName: String) {
+        root.accept { parent ->
+            parent.getChildren().filter { child -> child.tagName == tagName }.forEach {
+                parent.removeChild(it)
+            }
+        }
     }
 
     fun saveToFile(filePath: String) {
@@ -54,11 +58,6 @@ class XMLDocument(private val root: XMLElement) {
         return "<?xml $version $encoding?>\n$root"
     }
 
-    /*
-    *
-    *
-    *
-    * */
     fun findElementsByXPath(xPathExpression: String): MutableList<XMLElement> {
 
         val elements = mutableListOf<XMLElement>()

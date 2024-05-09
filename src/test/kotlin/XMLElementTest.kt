@@ -1,7 +1,7 @@
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
+import java.lang.IllegalArgumentException
 
-@Suppress("unused")
 class XMLElementTest {
 
     //             plano
@@ -42,15 +42,51 @@ class XMLElementTest {
     }
 
     @Test
-    fun removeChild() {
-        assertFalse(planoElement.removeChild(""))
-        assertFalse(cursoElement.removeChild(""))
-        assertTrue(planoElement.removeChild("filho"))
-        assertFalse(filhoPlano.removeChild("neto"))
-        assertFalse(filhoPlano.removeChild("neto2"))
-        assertFalse(netoPlano.removeChild("bisneto"))
+    fun tagNameAndTagTextValidation(){
+        assertThrows(IllegalArgumentException::class.java){planoElement.setTagName("")}
+        assertThrows(IllegalArgumentException::class.java){planoElement.setTagName("3plano")}
+        assertThrows(IllegalArgumentException::class.java){planoElement.setTagName("plano,")}
+        assertThrows(IllegalArgumentException::class.java){planoElement.setTagName("plan o")}
+        assertDoesNotThrow { planoElement.setTagName("_plano")}
+        assertDoesNotThrow { planoElement.setTagName("plano34234")}
+        assertDoesNotThrow { planoElement.setTagName("plano.-_")}
+        assertDoesNotThrow { planoElement.setTagName("p")}
+        assertThrows(IllegalArgumentException::class.java){planoElement.setTagText("")}
+        assertThrows(IllegalArgumentException::class.java){planoElement.setTagText("   ")}
+        assertThrows(IllegalArgumentException::class.java){planoElement.setTagText("plano do Ano<")}
+        assertDoesNotThrow { planoElement.setTagText("plano")}
+        assertDoesNotThrow { planoElement.setTagText("81n  flP-.,+º´«'fd>'")}
+
     }
 
+    @Test
+    fun attributeValidation() {
+        assertThrows(IllegalArgumentException::class.java) { cursoElement.addAttribute("", "2024") }
+        assertThrows(IllegalArgumentException::class.java) { cursoElement.addAttribute("3ano", "2024") }
+        assertThrows(IllegalArgumentException::class.java) { cursoElement.addAttribute("ano,", "2024") }
+        assertThrows(IllegalArgumentException::class.java) { cursoElement.addAttribute("an o", "2024") }
+        assertDoesNotThrow { cursoElement.addAttribute("_ano", "2024") }
+        assertDoesNotThrow { cursoElement.addAttribute("ano34234", "?????") }
+        assertDoesNotThrow { cursoElement.addAttribute("ano.-_", ".,.,.,<>") }
+        assertDoesNotThrow { cursoElement.addAttribute("a", "") }
+        assertThrows(IllegalArgumentException::class.java) { cursoElement.renameAttribute("a", "") }
+        assertThrows(IllegalArgumentException::class.java) { cursoElement.renameAttribute("a", "3ano") }
+        assertThrows(IllegalArgumentException::class.java) { cursoElement.renameAttribute("a", "ano,") }
+        assertThrows(IllegalArgumentException::class.java) { cursoElement.renameAttribute("a", "an o") }
+        assertDoesNotThrow { cursoElement.renameAttribute("a", "_ano") }
+        assertDoesNotThrow { cursoElement.renameAttribute("_ano", "ano34234") }
+        assertDoesNotThrow { cursoElement.renameAttribute("ano34234", "ano.-_") }
+
+    }
+
+    @Test
+    fun removeChild() {
+        assertFalse(planoElement.removeChild(netoPlano))
+        assertFalse(cursoElement.removeChild(bisnetoPlano))
+        assertFalse(cursoElement.removeChild(cursoElement))
+        assertFalse(netoPlano.removeChild(filhoPlano))
+        assertTrue(planoElement.removeChild(filhoPlano))
+    }
 
     @Test
     fun addAttribute() {

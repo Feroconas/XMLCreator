@@ -118,7 +118,6 @@ class XMLDocumentTest {
 
     @Test
     fun removeElementGlobally() {
-        // testar: Elemento nao existe, elemento leaf, element nao leaf
         document.removeElementGlobally("nao_existe")
         assertEquals(originalDocumentString, document.toString())
         document.removeElementGlobally("componente")

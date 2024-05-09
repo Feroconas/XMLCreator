@@ -1,20 +1,43 @@
 class XMLElement(
     internal var tagName: String,
     private var tagText: String? = null,
-    private val parent: XMLElement? = null // TODO() Set null when removed from parent? SIM
+    private var parent: XMLElement? = null
 ) {
     private val attributes = mutableListOf<XMLAttribute>()
     private val children = mutableListOf<XMLElement>()
 
     init {
         parent?.children?.add(this)
+        require(isValidXMLTagName(tagName))
+        require(isValidXMLTagText(tagText))
+    }
+
+    private companion object {
+
+        fun isValidXMLTagName(tagName: String): Boolean {
+            return tagName.isNotEmpty()
+                    && (tagName[0].isLetter() || tagName[0] == '_')
+                    && tagName.substring(1).all {
+                it.isLetterOrDigit() || it == '.' || it == '_' || it == '-'
+            }
+        }
+
+        fun isValidXMLTagText(tagText: String?): Boolean {
+            return tagText == null || (tagText.isNotBlank() && !tagText.contains('<'))
+        }
+
+        fun isValidXMLAttributeName(attributeName: String): Boolean {
+            return isValidXMLTagName(attributeName)
+        }
+
     }
 
     fun getTagName(): String {
         return tagName
     }
 
-    fun setTagName(tagName: String) { //todo validar se o introduzido é correto
+    fun setTagName(tagName: String) {
+        require(isValidXMLTagName(tagName))
         this.tagName = tagName
     }
 
@@ -22,7 +45,8 @@ class XMLElement(
         return tagText
     }
 
-    fun setTagText(tagText: String?) { //todo validar se o introduzido é correto
+    fun setTagText(tagText: String?) {
+        require(isValidXMLTagText(tagText))
         this.tagText = tagText
     }
 
@@ -35,7 +59,7 @@ class XMLElement(
     }
 
     fun addAttribute(name: String, value: String): Boolean {
-        //todo validar name (String) para ter a estrutura certa (nao pode ser string vazia, ou com espaços, etc)
+        require(isValidXMLAttributeName(name))
         if (attributes.none { it.name == name }) {
             attributes.add(XMLAttribute(name, value))
             return true
@@ -44,6 +68,7 @@ class XMLElement(
     }
 
     fun renameAttribute(name: String, newName: String): Boolean {
+        require(isValidXMLAttributeName(newName))
         if (attributes.any { it.name == newName })
             return false
         val attribute: XMLAttribute = attributes.find { it.name == name } ?: return false
@@ -65,10 +90,12 @@ class XMLElement(
         return children
     }
 
-    fun removeChild(childTagName: String): Boolean { // TODO Fazer com Visitor para remover os filhos (e netos, etc) dos elementos removidos? Passar objeto
-        val child = children.find { it.tagName == childTagName }
-        child?.accept { it.children.clear() } ?: return false
-        return true
+    fun removeChild(child: XMLElement): Boolean {
+        if (children.remove(child)) {
+            child.parent = null
+            return true
+        }
+        return false
     }
 
     fun accept(visitor: (XMLElement) -> Unit) {
@@ -115,3 +142,4 @@ class XMLElement(
         return buildString(0)
     }
 }
+
