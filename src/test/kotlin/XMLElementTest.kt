@@ -68,14 +68,15 @@ class XMLElementTest {
         assertDoesNotThrow { cursoElement.addAttribute("_ano", "2024") }
         assertDoesNotThrow { cursoElement.addAttribute("ano34234", "?????") }
         assertDoesNotThrow { cursoElement.addAttribute("ano.-_", ".,.,.,<>") }
-        assertDoesNotThrow { cursoElement.addAttribute("a", "") }
-        assertThrows(IllegalArgumentException::class.java) { cursoElement.renameAttribute("a", "") }
-        assertThrows(IllegalArgumentException::class.java) { cursoElement.renameAttribute("a", "3ano") }
-        assertThrows(IllegalArgumentException::class.java) { cursoElement.renameAttribute("a", "ano,") }
-        assertThrows(IllegalArgumentException::class.java) { cursoElement.renameAttribute("a", "an o") }
+        assertThrows(IllegalArgumentException::class.java) { cursoElement.renameAttribute("_ano", "") }
+        assertThrows(IllegalArgumentException::class.java) { cursoElement.renameAttribute("_ano", "3ano") }
+        assertThrows(IllegalArgumentException::class.java) { cursoElement.renameAttribute("_ano", "ano,") }
+        assertThrows(IllegalArgumentException::class.java) { cursoElement.renameAttribute("_ano", "an o") }
         assertDoesNotThrow { cursoElement.renameAttribute("a", "_ano") }
         assertDoesNotThrow { cursoElement.renameAttribute("_ano", "ano34234") }
         assertDoesNotThrow { cursoElement.renameAttribute("ano34234", "ano.-_") }
+        assertThrows(IllegalArgumentException::class.java) { cursoElement.setAttributeValue("_ano", "  ") }
+        assertThrows(IllegalArgumentException::class.java) { cursoElement.setAttributeValue("_ano", "2024\"2024") }
 
     }
 

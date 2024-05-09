@@ -45,7 +45,6 @@ class XMLDocumentTest {
             "\t</fuc>\n" +
             "</plano>"
 
-
     @BeforeEach
     fun addAttributes() {
         fucElement1.addAttribute("codigo", "M4310")
@@ -178,7 +177,6 @@ class XMLDocumentTest {
         assertEquals(listOf(ects, ects2), document.findElementsByXPath("ects"))
         assertEquals(listOf(componente1, componente2, componente3, componente4, componente5), document.findElementsByXPath("componente"))
         assertEquals(listOf(componente1, componente2, componente3, componente4, componente5), document.findElementsByXPath("fuc/avaliacao/componente"))
-
     }
 
 }

@@ -8,13 +8,13 @@ class XMLElement(
 
     init {
         parent?.children?.add(this)
-        require(isValidXMLTagName(tagName))
-        require(isValidXMLTagText(tagText))
+        require(isValidTagName(tagName))
+        require(isValidTagText(tagText))
     }
 
-    private companion object {
+    internal companion object {
 
-        fun isValidXMLTagName(tagName: String): Boolean {
+        fun isValidTagName(tagName: String): Boolean {
             return tagName.isNotEmpty()
                     && (tagName[0].isLetter() || tagName[0] == '_')
                     && tagName.substring(1).all {
@@ -22,12 +22,8 @@ class XMLElement(
             }
         }
 
-        fun isValidXMLTagText(tagText: String?): Boolean {
+        fun isValidTagText(tagText: String?): Boolean {
             return tagText == null || (tagText.isNotBlank() && !tagText.contains('<'))
-        }
-
-        fun isValidXMLAttributeName(attributeName: String): Boolean {
-            return isValidXMLTagName(attributeName)
         }
 
     }
@@ -37,7 +33,7 @@ class XMLElement(
     }
 
     fun setTagName(tagName: String) {
-        require(isValidXMLTagName(tagName))
+        require(isValidTagName(tagName))
         this.tagName = tagName
     }
 
@@ -46,7 +42,7 @@ class XMLElement(
     }
 
     fun setTagText(tagText: String?) {
-        require(isValidXMLTagText(tagText))
+        require(isValidTagText(tagText))
         this.tagText = tagText
     }
 
@@ -59,8 +55,7 @@ class XMLElement(
     }
 
     fun addAttribute(name: String, value: String): Boolean {
-        require(isValidXMLAttributeName(name))
-        if (attributes.none { it.name == name }) {
+        if (attributes.none { it.getName() == name }) {
             attributes.add(XMLAttribute(name, value))
             return true
         }
@@ -68,22 +63,21 @@ class XMLElement(
     }
 
     fun renameAttribute(name: String, newName: String): Boolean {
-        require(isValidXMLAttributeName(newName))
-        if (attributes.any { it.name == newName })
+        if (attributes.any { it.getName() == newName })
             return false
-        val attribute: XMLAttribute = attributes.find { it.name == name } ?: return false
-        attribute.name = newName
+        val attribute: XMLAttribute = attributes.find { it.getName() == name } ?: return false
+        attribute.setName(newName)
         return true
     }
 
     fun setAttributeValue(name: String, newValue: String): Boolean {
-        val attribute: XMLAttribute = attributes.find { it.name == name } ?: return false
-        attribute.value = newValue
+        val attribute: XMLAttribute = attributes.find { it.getName() == name } ?: return false
+        attribute.setValue(newValue)
         return true
     }
 
     fun removeAttribute(name: String): Boolean {
-        return attributes.remove(attributes.find { it.name == name })
+        return attributes.remove(attributes.find { it.getName() == name })
     }
 
     fun getChildren(): MutableList<XMLElement> {
@@ -115,7 +109,7 @@ class XMLElement(
 
         val maximumDepth = maximumDepth()
 
-        fun XMLElement.buildString(numberOfTabs: Int): String {
+        fun XMLElement.buildString(numberOfTabs: Int = 0): String {
             return buildString {
                 append("\t".repeat(numberOfTabs) + "<$tagName")
                 if (attributes.isNotEmpty())
@@ -139,7 +133,7 @@ class XMLElement(
             }
         }
 
-        return buildString(0)
+        return buildString()
     }
 }
 

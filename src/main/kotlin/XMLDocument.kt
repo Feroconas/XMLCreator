@@ -10,19 +10,19 @@ class XMLDocument(private val root: XMLElement) {
     }
 
     fun getVersion(): String {
-        return version.value
+        return version.getValue()
     }
 
     fun getEncoding(): String {
-        return encoding.value
+        return encoding.getValue()
     }
 
     fun setVersion(version: String) {
-        this.version.value = version
+        this.version.setValue(version)
     }
 
     fun setEncoding(encoding: String) {
-        this.encoding.value = encoding
+        this.encoding.setValue(encoding)
     }
 
     fun addAttributeGlobally(tagName: String, attributeName: String, attributeValue: String) {
@@ -65,7 +65,7 @@ class XMLDocument(private val root: XMLElement) {
         if (tagNames.isEmpty())
             return elements
 
-        fun XMLElement.search(tagNamesIndex: Int) {
+        fun XMLElement.search(tagNamesIndex: Int = 0) {
             when {
                 tagNames[tagNamesIndex] != tagName -> getChildren().forEach { it.search(0) }
                 tagNamesIndex != tagNames.lastIndex -> getChildren().forEach { it.search(tagNamesIndex + 1) }
@@ -73,7 +73,7 @@ class XMLDocument(private val root: XMLElement) {
             }
         }
 
-        root.search(0)
+        root.search()
         return elements
     }
 }
