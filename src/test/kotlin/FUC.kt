@@ -1,44 +1,47 @@
+@file:Suppress("unused")
+
 @Element("fuc")
 class FUC1(
-    @Attribute
-    val codigo: String,
-    @Element
-    val nome: String,
+    @Attribute("codigo")
+    val code: String,
+    @Element(tagName = "nome")
+    val name: String,
     @Element
     val ects: Double,
-    val observacoes: String,
-    @Element
-    val avaliacao: List<ComponenteAvaliacao1>
+    val observations: String,
+    @Element(tagName = "avaliacao", createParent = true)
+    val evaluation: List<EvaluationComponent1>
 )
 
 @Element("componente")
-class ComponenteAvaliacao1(
-    @Attribute
-    val nome: String,
-    @Attribute
-    val peso: Int
+class EvaluationComponent1(
+    @Attribute(name = "nome")
+    val name: String,
+    @Attribute(name = "peso")
+    val weight: Int
 )
 
 @Element("fuc")
 @ElementTransform(CustomElementSort::class)
 class FUC2(
-    @Attribute
-    val codigo: String,
-    @Element
-    val nome: String,
+    @Attribute("codigo")
+    val code: String,
+    @Element(tagName = "nome")
+    val name: String,
     @Element
     val ects: Double,
-    val observacoes: String,
-    val avaliacao: List<ComponenteAvaliacao2>
+    val observations: String,
+    @Element(tagName = "avaliacao")
+    val evaluation: List<EvaluationComponent2>
 )
 
 @Element("componente")
-class ComponenteAvaliacao2(
-    @Attribute
-    val nome: String,
-    @Attribute
+class EvaluationComponent2(
+    @Attribute(name = "nome")
+    val name: String,
+    @Attribute(name = "peso")
     @AttributeTransform(AddPercentage::class)
-    val peso: Int
+    val weight: Int
 )
 
 class CustomElementSort : XMLElementTransform {
