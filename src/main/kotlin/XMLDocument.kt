@@ -1,6 +1,6 @@
 import java.io.File
 
-class XMLDocument(private val root: XMLElement) {
+class XMLDocument(val root: XMLElement) {
     private val version: XMLAttribute = XMLAttribute("version", DEFAULT_VERSION)
     private val encoding: XMLAttribute = XMLAttribute("encoding", DEFAULT_ENCODING)
 
@@ -26,7 +26,7 @@ class XMLDocument(private val root: XMLElement) {
     }
 
     fun addAttributeGlobally(tagName: String, attributeName: String, attributeValue: String) {
-        root.accept { if (it.tagName == tagName) it.addAttribute(attributeName, attributeValue) }
+        root.accept { if (it.getTagName() == tagName) it.addAttribute(attributeName, attributeValue) }
     }
 
     fun renameAttributeGlobally(name: String, newName: String) {
@@ -38,12 +38,12 @@ class XMLDocument(private val root: XMLElement) {
     }
 
     fun renameElementGlobally(tagName: String, newTagName: String) {
-        root.accept { if (it.tagName == tagName) it.tagName = newTagName }
+        root.accept { if (it.getTagName() == tagName) it.setTagName(newTagName) }
     }
 
     fun removeElementGlobally(tagName: String) {
         root.accept { parent ->
-            parent.getChildren().filter { child -> child.tagName == tagName }.forEach {
+            parent.getChildren().filter { child -> child.getTagName() == tagName }.forEach {
                 parent.removeChild(it)
             }
         }
@@ -67,7 +67,7 @@ class XMLDocument(private val root: XMLElement) {
 
         fun XMLElement.search(tagNamesIndex: Int = 0) {
             when {
-                tagNames[tagNamesIndex] != tagName -> getChildren().forEach { it.search(0) }
+                tagNames[tagNamesIndex] != getTagName() -> getChildren().forEach { it.search(0) }
                 tagNamesIndex != tagNames.lastIndex -> getChildren().forEach { it.search(tagNamesIndex + 1) }
                 else -> elements.add(this)
             }

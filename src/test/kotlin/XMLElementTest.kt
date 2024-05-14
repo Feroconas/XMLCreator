@@ -87,6 +87,9 @@ class XMLElementTest {
         assertFalse(cursoElement.removeChild(cursoElement))
         assertFalse(netoPlano.removeChild(filhoPlano))
         assertTrue(planoElement.removeChild(filhoPlano))
+        assertNull(filhoPlano.getParent())
+        assertNotNull(netoPlano.getParent())
+        assertNotNull(cursoElement.getParent())
     }
 
     @Test

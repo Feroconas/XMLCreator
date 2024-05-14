@@ -63,6 +63,7 @@ class XMLDocumentTest {
 
     @Test
     fun gettersAndSetters() {
+        assertEquals(planoElement, document.root)
         assertEquals(document.getVersion(), XMLDocument.DEFAULT_VERSION)
         assertEquals(document.getEncoding(), XMLDocument.DEFAULT_ENCODING)
         document.setVersion("2.0")

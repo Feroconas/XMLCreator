@@ -1,10 +1,14 @@
 class XMLElement(
-    internal var tagName: String,
+    private var tagName: String,
     private var tagText: String? = null,
     private var parent: XMLElement? = null
 ) {
     private val attributes = mutableListOf<XMLAttribute>()
     private val children = mutableListOf<XMLElement>()
+
+    fun Any.toXMLElement() : XMLElement{
+        return XMLElement(this.toString())
+    }
 
     init {
         parent?.children?.add(this)
