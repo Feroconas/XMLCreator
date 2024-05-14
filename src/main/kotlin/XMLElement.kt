@@ -6,17 +6,13 @@ class XMLElement(
     private val attributes = mutableListOf<XMLAttribute>()
     private val children = mutableListOf<XMLElement>()
 
-    fun Any.toXMLElement() : XMLElement{
-        return XMLElement(this.toString())
-    }
-
     init {
         parent?.children?.add(this)
         require(isValidTagName(tagName))
         require(isValidTagText(tagText))
     }
 
-    internal companion object {
+    companion object {
 
         fun isValidTagName(tagName: String): Boolean {
             return tagName.isNotEmpty()
@@ -28,6 +24,10 @@ class XMLElement(
 
         fun isValidTagText(tagText: String?): Boolean {
             return tagText == null || (tagText.isNotBlank() && !tagText.contains('<'))
+        }
+
+        fun Any.toXMLElement(): XMLElement {
+            return XMLElement(this.toString())
         }
 
     }
@@ -140,4 +140,3 @@ class XMLElement(
         return buildString()
     }
 }
-

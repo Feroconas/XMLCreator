@@ -5,7 +5,7 @@ data class XMLAttribute(private var name: String, private var value: String) {
         require(isValidValue(value))
     }
 
-    internal companion object {
+    companion object {
 
         fun isValidName(name: String): Boolean {
             return XMLElement.isValidTagName(name)
