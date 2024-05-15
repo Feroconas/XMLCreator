@@ -71,9 +71,9 @@ annotation class ElementTransform(val elementTransform: KClass<out XMLElementTra
 @Target(AnnotationTarget.PROPERTY)
 annotation class AttributeTransform(val stringTransform: KClass<out XMLStringTransform>)
 
-internal class AnnotationConfigurationException(message: String) : IllegalArgumentException(message)
+class AnnotationConfigurationException(message: String) : Exception(message)
 
-fun Any.validateXMLAnnotations() {
+internal fun Any.validateXMLAnnotations() {
 
     if (!this::class.hasAnnotation<Element>())
         throw AnnotationConfigurationException(("${this::class.simpleName} must be annotated with @${Element::class.simpleName}"))

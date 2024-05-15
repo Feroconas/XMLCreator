@@ -28,5 +28,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-reflect:1.9.22" level="project" />
+    <orderEntry type="library" name="jetbrains.kotlin.reflect" level="project" />
   </component>
 </module>

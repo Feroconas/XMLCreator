@@ -6,7 +6,7 @@
 		<ects>6.0</ects>
 		<avaliacao>
 			<componente nome="Quizzes" peso="20%"/>
-			<componente nome="Projeto" peso="80%"/>
+			<componente nome="Projeto" peso="80%"> </componente>
 		</avaliacao>
 	</fuc>
 	<fuc codigo="03782">

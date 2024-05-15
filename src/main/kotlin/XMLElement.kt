@@ -29,7 +29,7 @@ class XMLElement(
             return tagText == null || (tagText.isNotBlank() && !tagText.contains('<'))
         }
 
-        fun Any.toXMLElement(parent: XMLElement? = null): XMLElement { // TODO
+        fun Any.toXMLElement(parent: XMLElement? = null): XMLElement {
 
             this.validateXMLAnnotations()
             val element = XMLElement(this::class.findAnnotation<Element>()!!.tagName, null, parent)
@@ -37,16 +37,33 @@ class XMLElement(
             this::class.memberProperties.forEach { property ->
                 val propertyStringValue = property.call(this).toString()
                 if (property.hasAnnotation<Attribute>()) {
-                    val stringTransform = property.findAnnotation<AttributeTransform>()?.stringTransform?.createInstance()
-                    val attributeValue = stringTransform?.transform(propertyStringValue) ?: propertyStringValue
+                    var attributeValue = propertyStringValue
+                    this::class.findAnnotations<AttributeTransform>().forEach {
+                        attributeValue = it.stringTransform.createInstance().transform(attributeValue)
+                    }
                     element.addAttribute(property.name, attributeValue)
                 } else if (property.hasAnnotation<TagText>())
                     element.setTagText(propertyStringValue)
-                else if (property.hasAnnotation<Element>()) {
+                else if (property.hasAnnotation<Element>()) { // TODO
+                    // createChildren()
+                    if (property.returnType.isSubtypeOf(typeOf<Collection<Any?>>())) {
+                        val collection = property.call(this) as Collection<Any?>
+                        collection.forEach{
+                            if (it != null && it::class.hasAnnotation<Element>())
+                                println()
+
+                        }
+                    }
+
                     println(property.returnType.isSubtypeOf(typeOf<Collection<Any>>()))
                     println(property.returnType::class.hasAnnotation<Element>())
                 }
             }
+
+            this::class.findAnnotations<ElementTransform>().forEach {
+                it.elementTransform.createInstance().transform(element)
+            }
+
             return element
         }
     }
