@@ -1,4 +1,3 @@
-
 import kotlin.reflect.full.*
 import kotlin.reflect.typeOf
 
@@ -32,22 +31,20 @@ class XMLElement(
 
         fun Any.toXMLElement(parent: XMLElement? = null): XMLElement { // TODO
 
-            val tagName = this::class.findAnnotation<Element>()?.tagName
-                ?: throw IllegalArgumentException(("${this::class.simpleName} must be annotated with @${Element::class.simpleName}"))
-            val element = XMLElement(tagName, null, parent)
+            this.validateXMLAnnotations()
+            val element = XMLElement(this::class.findAnnotation<Element>()!!.tagName, null, parent)
 
-            this::class.memberProperties.forEach {
-                val propertyString = it.call(this).toString()
-                if (it.hasAnnotation<Attribute>()) {
-                    val attributeTransform = it.findAnnotation<AttributeTransform>()?.stringTransform?.createInstance()
-                    val attributeValue = attributeTransform?.transform(propertyString) ?: propertyString
-                    element.addAttribute(it.name, attributeValue)
-                }
-                if (it.hasAnnotation<TagText>())
-                    element.setTagText(propertyString)
-                if (it.hasAnnotation<Element>()){
-                    println(it.returnType.isSubtypeOf(typeOf<Collection<Any>>()))
-                    println(it::class.hasAnnotation<Element>())
+            this::class.memberProperties.forEach { property ->
+                val propertyStringValue = property.call(this).toString()
+                if (property.hasAnnotation<Attribute>()) {
+                    val stringTransform = property.findAnnotation<AttributeTransform>()?.stringTransform?.createInstance()
+                    val attributeValue = stringTransform?.transform(propertyStringValue) ?: propertyStringValue
+                    element.addAttribute(property.name, attributeValue)
+                } else if (property.hasAnnotation<TagText>())
+                    element.setTagText(propertyStringValue)
+                else if (property.hasAnnotation<Element>()) {
+                    println(property.returnType.isSubtypeOf(typeOf<Collection<Any>>()))
+                    println(property.returnType::class.hasAnnotation<Element>())
                 }
             }
             return element

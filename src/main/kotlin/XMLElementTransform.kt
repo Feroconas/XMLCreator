@@ -1,3 +1,3 @@
 interface XMLElementTransform {
-    fun transform(element : XMLElement)
+    fun transform(element: XMLElement)
 }

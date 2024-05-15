@@ -1,6 +1,6 @@
-import org.junit.jupiter.api.Test
+
 import org.junit.jupiter.api.Assertions.*
-import java.lang.IllegalArgumentException
+import org.junit.jupiter.api.Test
 
 class XMLElementTest {
 
@@ -42,20 +42,20 @@ class XMLElementTest {
     }
 
     @Test
-    fun tagNameAndTagTextValidation(){
-        assertThrows(IllegalArgumentException::class.java){planoElement.setTagName("")}
-        assertThrows(IllegalArgumentException::class.java){planoElement.setTagName("3plano")}
-        assertThrows(IllegalArgumentException::class.java){planoElement.setTagName("plano,")}
-        assertThrows(IllegalArgumentException::class.java){planoElement.setTagName("plan o")}
-        assertDoesNotThrow { planoElement.setTagName("_plano")}
-        assertDoesNotThrow { planoElement.setTagName("plano34234")}
-        assertDoesNotThrow { planoElement.setTagName("plano.-_")}
-        assertDoesNotThrow { planoElement.setTagName("p")}
-        assertThrows(IllegalArgumentException::class.java){planoElement.setTagText("")}
-        assertThrows(IllegalArgumentException::class.java){planoElement.setTagText("   ")}
-        assertThrows(IllegalArgumentException::class.java){planoElement.setTagText("plano do Ano<")}
-        assertDoesNotThrow { planoElement.setTagText("plano")}
-        assertDoesNotThrow { planoElement.setTagText("81n  flP-.,+º´«'fd>'")}
+    fun tagNameAndTagTextValidation() {
+        assertThrows(IllegalArgumentException::class.java) { planoElement.setTagName("") }
+        assertThrows(IllegalArgumentException::class.java) { planoElement.setTagName("3plano") }
+        assertThrows(IllegalArgumentException::class.java) { planoElement.setTagName("plano,") }
+        assertThrows(IllegalArgumentException::class.java) { planoElement.setTagName("plan o") }
+        assertDoesNotThrow { planoElement.setTagName("_plano") }
+        assertDoesNotThrow { planoElement.setTagName("plano34234") }
+        assertDoesNotThrow { planoElement.setTagName("plano.-_") }
+        assertDoesNotThrow { planoElement.setTagName("p") }
+        assertThrows(IllegalArgumentException::class.java) { planoElement.setTagText("") }
+        assertThrows(IllegalArgumentException::class.java) { planoElement.setTagText("   ") }
+        assertThrows(IllegalArgumentException::class.java) { planoElement.setTagText("plano do Ano<") }
+        assertDoesNotThrow { planoElement.setTagText("plano") }
+        assertDoesNotThrow { planoElement.setTagText("81n  flP-.,+º´«'fd>'") }
 
     }
 

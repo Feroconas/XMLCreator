@@ -1,4 +1,6 @@
 import kotlin.reflect.KClass
+import kotlin.reflect.full.hasAnnotation
+import kotlin.reflect.full.memberProperties
 
 /**
  * Marks a class as representing an element in the XML file hierarchy.
@@ -68,3 +70,31 @@ annotation class ElementTransform(val elementTransform: KClass<out XMLElementTra
 
 @Target(AnnotationTarget.PROPERTY)
 annotation class AttributeTransform(val stringTransform: KClass<out XMLStringTransform>)
+
+internal class AnnotationConfigurationException(message: String) : IllegalArgumentException(message)
+
+fun Any.validateXMLAnnotations() {
+
+    if (!this::class.hasAnnotation<Element>())
+        throw AnnotationConfigurationException(("${this::class.simpleName} must be annotated with @${Element::class.simpleName}"))
+
+    var tagTextAnnotationFound = false
+
+    this::class.memberProperties.forEach { property ->
+        val propertyAnnotations = property.annotations
+        val mutuallyExclusiveAnnotations = propertyAnnotations.filter { it is Element || it is TagText || it is Attribute }
+        if (mutuallyExclusiveAnnotations.size > 1) throw AnnotationConfigurationException(
+            ("The @${Element::class.simpleName}, @${TagText::class.simpleName}, and @${Attribute::class.simpleName} annotations " +
+                    "are mutually exclusive and can only be used once in a property." +
+                    "The property ${property.name} in ${this::class.simpleName} violates this rule.")
+        )
+        if (property.hasAnnotation<TagText>()) {
+            if (tagTextAnnotationFound)
+                throw AnnotationConfigurationException(
+                    "The @${TagText::class.simpleName} annotation can't be used more than once " +
+                            "per class. ${this::class.simpleName} violates this rule."
+                )
+            tagTextAnnotationFound = true
+        }
+    }
+}
