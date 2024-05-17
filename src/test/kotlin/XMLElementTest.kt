@@ -1,9 +1,8 @@
-
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class XMLElementTest {
-
+    
     //             plano
     //               /\
     //              /  \
@@ -14,14 +13,14 @@ class XMLElementTest {
     //                          \
     //                           \
     //                          bisneto
-
+    
     private val planoElement = XMLElement("plano")
     private val cursoElement = XMLElement("curso", "Mestrado em Engenharia Informática", planoElement)
     private val filhoPlano = XMLElement("filho", parent = planoElement)
     private val netoPlano = XMLElement("neto", parent = filhoPlano)
     private val netoPlano2 = XMLElement("neto2", parent = filhoPlano)
     private val bisnetoPlano = XMLElement("bisneto", "bisneto_tag", parent = netoPlano)
-
+    
     @Test
     fun gettersAndSetters() {
         assertEquals("plano", planoElement.getTagName())
@@ -40,7 +39,7 @@ class XMLElementTest {
         assertEquals(0, netoPlano2.getChildren().size)
         assertEquals(filhoPlano, planoElement.getChildren()[1])
     }
-
+    
     @Test
     fun tagNameAndTagTextValidation() {
         assertThrows(IllegalArgumentException::class.java) { planoElement.setTagName("") }
@@ -56,9 +55,8 @@ class XMLElementTest {
         assertThrows(IllegalArgumentException::class.java) { planoElement.setTagText("plano do Ano<") }
         assertDoesNotThrow { planoElement.setTagText("plano") }
         assertDoesNotThrow { planoElement.setTagText("81n  flP-.,+º´«'fd>'") }
-
     }
-
+    
     @Test
     fun attributeValidation() {
         assertThrows(IllegalArgumentException::class.java) { cursoElement.addAttribute("", "2024") }
@@ -77,9 +75,8 @@ class XMLElementTest {
         assertDoesNotThrow { cursoElement.renameAttribute("ano34234", "ano.-_") }
         assertThrows(IllegalArgumentException::class.java) { cursoElement.setAttributeValue("_ano", "  ") }
         assertThrows(IllegalArgumentException::class.java) { cursoElement.setAttributeValue("_ano", "2024\"2024") }
-
     }
-
+    
     @Test
     fun removeChild() {
         assertFalse(planoElement.removeChild(netoPlano))
@@ -91,7 +88,7 @@ class XMLElementTest {
         assertNotNull(netoPlano.getParent())
         assertNotNull(cursoElement.getParent())
     }
-
+    
     @Test
     fun addAttribute() {
         assertTrue(cursoElement.addAttribute("ano", "2023"))
@@ -99,7 +96,7 @@ class XMLElementTest {
         assertFalse(cursoElement.addAttribute("ano", "2024"))
         assertEquals(XMLAttribute("ano", "2023"), cursoElement.getAttributes()[0])
     }
-
+    
     @Test
     fun renameAttribute() {
         assertFalse(cursoElement.renameAttribute("ano", "anoNovo"))
@@ -110,9 +107,8 @@ class XMLElementTest {
         assertFalse(cursoElement.renameAttribute("mes", "mes"))
         assertFalse(cursoElement.renameAttribute("mes", "anoNovo"))
         assertEquals(XMLAttribute("anoNovo", "2023"), cursoElement.getAttributes()[0])
-
     }
-
+    
     @Test
     fun setAttributeValue() {
         assertFalse(cursoElement.setAttributeValue("ano", "2024"))
@@ -122,7 +118,7 @@ class XMLElementTest {
         assertTrue(cursoElement.setAttributeValue("ano", "2024"))
         assertEquals(XMLAttribute("ano", "2024"), cursoElement.getAttributes()[0])
     }
-
+    
     @Test
     fun removeAttribute() {
         assertFalse(cursoElement.removeAttribute("ano"))
@@ -131,5 +127,4 @@ class XMLElementTest {
         assertTrue(cursoElement.removeAttribute("mes"))
         assertEquals(1, cursoElement.getAttributes().size)
     }
-
 }

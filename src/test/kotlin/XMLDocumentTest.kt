@@ -1,6 +1,7 @@
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.*
+
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.io.File
 
 @Suppress("unused")
@@ -24,26 +25,26 @@ class XMLDocumentTest {
 
     private val document = XMLDocument(planoElement)
     private val originalDocumentString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<plano>\n" +
-            "\t<curso>Mestrado em Engenharia Informática</curso>\n" +
-            "\t<fuc codigo=\"M4310\">\n" +
-            "\t\t<nome>Programação Avançada</nome>\n" +
-            "\t\t<ects>6.0</ects>\n" +
-            "\t\t<avaliacao>\n" +
-            "\t\t\t<componente nome=\"Quizzes\" peso=\"20%\"/>\n" +
-            "\t\t\t<componente nome=\"Projeto\" peso=\"80%\"/>\n" +
-            "\t\t</avaliacao>\n" +
-            "\t</fuc>\n" +
-            "\t<fuc codigo=\"03782\">\n" +
-            "\t\t<nome>Dissertação</nome>\n" +
-            "\t\t<ects>42.0</ects>\n" +
-            "\t\t<avaliacao>\n" +
-            "\t\t\t<componente nome=\"Dissertação\" peso=\"60%\"/>\n" +
-            "\t\t\t<componente nome=\"Apresentação\" peso=\"20%\"/>\n" +
-            "\t\t\t<componente nome=\"Discussão\" peso=\"20%\"/>\n" +
-            "\t\t</avaliacao>\n" +
-            "\t</fuc>\n" +
-            "</plano>"
+        "<plano>\n" +
+        "\t<curso>Mestrado em Engenharia Informática</curso>\n" +
+        "\t<fuc codigo=\"M4310\">\n" +
+        "\t\t<nome>Programação Avançada</nome>\n" +
+        "\t\t<ects>6.0</ects>\n" +
+        "\t\t<avaliacao>\n" +
+        "\t\t\t<componente nome=\"Quizzes\" peso=\"20%\"/>\n" +
+        "\t\t\t<componente nome=\"Projeto\" peso=\"80%\"/>\n" +
+        "\t\t</avaliacao>\n" +
+        "\t</fuc>\n" +
+        "\t<fuc codigo=\"03782\">\n" +
+        "\t\t<nome>Dissertação</nome>\n" +
+        "\t\t<ects>42.0</ects>\n" +
+        "\t\t<avaliacao>\n" +
+        "\t\t\t<componente nome=\"Dissertação\" peso=\"60%\"/>\n" +
+        "\t\t\t<componente nome=\"Apresentação\" peso=\"20%\"/>\n" +
+        "\t\t\t<componente nome=\"Discussão\" peso=\"20%\"/>\n" +
+        "\t\t</avaliacao>\n" +
+        "\t</fuc>\n" +
+        "</plano>"
 
     @BeforeEach
     fun addAttributes() {
@@ -124,23 +125,23 @@ class XMLDocumentTest {
         val correctDocumentString = originalDocumentString
             .replace(
                 "\t\t\t<componente nome=\"Quizzes\" peso=\"20%\"/>\n" +
-                        "\t\t\t<componente nome=\"Projeto\" peso=\"80%\"/>\n", ""
+                    "\t\t\t<componente nome=\"Projeto\" peso=\"80%\"/>\n", ""
             )
             .replace(
                 "\t\t\t<componente nome=\"Dissertação\" peso=\"60%\"/>\n" +
-                        "\t\t\t<componente nome=\"Apresentação\" peso=\"20%\"/>\n" +
-                        "\t\t\t<componente nome=\"Discussão\" peso=\"20%\"/>\n", ""
+                    "\t\t\t<componente nome=\"Apresentação\" peso=\"20%\"/>\n" +
+                    "\t\t\t<componente nome=\"Discussão\" peso=\"20%\"/>\n", ""
             )
             .replace(
                 "<avaliacao>\n" +
-                        "\t\t</avaliacao>", "<avaliacao/>"
+                    "\t\t</avaliacao>", "<avaliacao/>"
             )
         assertEquals(correctDocumentString, document.toString())
         document.removeElementGlobally("fuc")
         val correctDocumentString2 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                "<plano>\n" +
-                "\t<curso>Mestrado em Engenharia Informática</curso>\n" +
-                "</plano>"
+            "<plano>\n" +
+            "\t<curso>Mestrado em Engenharia Informática</curso>\n" +
+            "</plano>"
         assertEquals(correctDocumentString2, document.toString())
     }
 
@@ -164,9 +165,9 @@ class XMLDocumentTest {
         child.addAttribute("ano", "2020")
         assertEquals(
             "<?xml version=\"1.1\" encoding=\"UTF-16\"?>\n" +
-                    "<teste>\n" +
-                    "\t<curso ano=\"2020\">Engenharia Eletrónica</curso>\n" +
-                    "</teste>",
+                "<teste>\n" +
+                "\t<curso ano=\"2020\">Engenharia Eletrónica</curso>\n" +
+                "</teste>",
             newDocument.toString()
         )
     }
@@ -177,7 +178,9 @@ class XMLDocumentTest {
         assertEquals(listOf<XMLElement>(), document.findElementsByXPath("faculdade"))
         assertEquals(listOf(ects, ects2), document.findElementsByXPath("ects"))
         assertEquals(listOf(componente1, componente2, componente3, componente4, componente5), document.findElementsByXPath("componente"))
-        assertEquals(listOf(componente1, componente2, componente3, componente4, componente5), document.findElementsByXPath("fuc/avaliacao/componente"))
+        assertEquals(
+            listOf(componente1, componente2, componente3, componente4, componente5),
+            document.findElementsByXPath("fuc/avaliacao/componente")
+        )
     }
-
 }
