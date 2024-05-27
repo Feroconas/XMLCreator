@@ -1,4 +1,5 @@
 import XMLElement.Companion.toXMLElement
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
@@ -59,3 +60,4 @@ class XMLAnnotationsTest {
         assertThrows<AnnotationConfigurationException> { "1234".toXMLElement() }
     }
 }
+

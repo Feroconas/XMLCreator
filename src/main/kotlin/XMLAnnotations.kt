@@ -11,19 +11,20 @@ import kotlin.reflect.full.memberProperties
  * specify the XML element's tag text, attributes, and children.
  *
  * 2 - When applied to a property of a type (class) annotated with [Element], a child XML element is recursively created solely
- * based on that property's value. If that property is a [Collection], a child is created for each element in it.
+ * based on that property.
  *
  * 3 - When applied to a property of a type not annotated with [Element], that property is considered a child (with no children
- * of its own), where its value dictates the tag text. If that property is a [Collection], a child is created for each element
- * in it.
+ * of its own), where its value dictates the tag text.
  *
- * @property tagName The tag name of the XML element. If not provided or empty, class name or property name is used, depending on
+ * In cases 2 and 3, if the property is a [Collection], a child is created for each element in it.
+ *
+ * @param tagName The tag name of the XML element. If not provided or empty, class name or property name is used, depending on
  * whether it was applied to a class or a property. Not relevant in case 2 unless [createParent] is true.
- * @property tagTextTransformer Specifies a string transformation to apply on the element's tag text.
+ * @param tagTextTransformer Specifies a string transformation to apply on the element's tag text.
  * By default, no transform is applied. Only relevant if the element has tag text.
- * @property elementSorting Specifies how the element's children should be sorted. By default, the elements are ordered based on the
+ * @param elementSorting Specifies how the element's children should be sorted. By default, the elements are ordered based on the
  * class properties' names. Only relevant in case 1.
- * @property createParent If true, an additional is created between the parent and the child/children. Only relevant in case 2.
+ * @param createParent If true, an additional is created between the parent and the child/children. Only relevant in case 2.
  */
 
 @Target(AnnotationTarget.CLASS, AnnotationTarget.PROPERTY)
@@ -48,13 +49,18 @@ annotation class TagText
  *
  * Must be applied to a property in a class annotated with [Element].
  *
- * @property name The attribute's name. If not provided or empty, the name of the property is used.
- * @property attributeValueTransformer The class with the transform to be applied on the attribute's value.
+ * @param name The attribute's name. If not provided or empty, the name of the property is used.
+ * @param attributeTransformer The class with the transform to be applied on the attribute's value.
  * By default, no transform is applied.
  */
 
 @Target(AnnotationTarget.PROPERTY)
-annotation class Attribute(val name: String = "", val attributeValueTransformer: KClass<out StringTransformer> = NoStringTransformer::class)
+annotation class Attribute(val name: String = "", val attributeTransformer: KClass<out StringTransformer> = NoStringTransformer::class)
+
+/**
+ * This exception is thrown if the configuration of the XML annotations on a class and its member properties is invalid.
+ * @param message The Exception message.
+ */
 
 class AnnotationConfigurationException(message: String) : Exception(message)
 

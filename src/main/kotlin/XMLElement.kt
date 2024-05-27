@@ -1,5 +1,17 @@
 import kotlin.reflect.full.*
 import kotlin.reflect.typeOf
+import kotlin.reflect.KClass
+
+/**
+ * Represents an XML element with a tag name, optional tag text, and a parent element.
+ *
+ * @property tagName The tag name of the XML element. Must be a valid tag name.
+ * @property tagText The text content of the XML element. Must be valid tag text. Defaults to null.
+ * @property parent The parent element of this XML element. Defaults to null.
+ * @constructor Creates an XMLElement with the specified tag name, tag text, and parent.
+ *
+ * @throws IllegalArgumentException If the tag name or tag text is invalid.
+ */
 
 class XMLElement(
     private var tagName: String,
@@ -52,98 +64,71 @@ class XMLElement(
             return tagText == null || (tagText.isNotBlank() && !tagText.contains('<'))
         }
         
-        // TODO Desparguetizar TODO Desparguetizar TODO Desparguetizar TODO Desparguetizar TODO Desparguetizar
+        /**
+         * Converts any object annotated with [Element] to an XMLElement, creating a nested structure based on the object's
+         * properties and their annotations.
+         *
+         * @receiver Any object to be converted to an XML element.
+         * @param parent The parent XMLElement to which this element will be attached. Defaults to null.
+         * @return The resulting XMLElement representing the object.
+         * @throws AnnotationConfigurationException If the object or its properties have invalid or missing annotations.
+         */
+        
         fun Any.toXMLElement(parent: XMLElement? = null): XMLElement {
             
-            this.validateXMLAnnotations()
+            validateXMLAnnotations()
             val classElementAnnotation = this::class.findAnnotation<Element>()!!
-            val elementTagName = classElementAnnotation.tagName.ifEmpty { this::class.simpleName!! }
-            val element = XMLElement(elementTagName, null, parent)
+            val mainElementTagName = classElementAnnotation.tagName.ifEmpty { this::class.simpleName!! }
+            val mainElement = XMLElement(mainElementTagName, null, parent)
+            
+            fun String.transform(transformer: KClass<out StringTransformer>): String {
+                return transformer.createInstance().transform(this)
+            }
             
             this::class.memberProperties.forEach { property ->
                 val propertyStringValue = property.call(this).toString()
-                if (property.hasAnnotation<Attribute>()) {
-                    var attributeValue = propertyStringValue
-                    attributeValue = property.findAnnotation<Attribute>()!!.attributeValueTransformer.createInstance().transform(attributeValue)
-                    element.addAttribute(property.findAnnotation<Attribute>()!!.name.ifEmpty { property.name }, attributeValue)
-                }
-                else if (property.hasAnnotation<TagText>()) {
-                    element.setTagText(classElementAnnotation.tagTextTransformer.createInstance().transform(propertyStringValue))
-                }
-                else if (property.hasAnnotation<Element>()) {
-                    val elementAnnotation = property.findAnnotation<Element>()!!
-                    val elementParent = if (elementAnnotation.createParent) XMLElement(elementAnnotation.tagName.ifEmpty { property.name }, null, element) else element
-                    if (property.returnType.isSubtypeOf(typeOf<Collection<*>>())) {
-                        val collection = property.call(this) as Collection<*>
-                        for (collectionElement in collection) {
-                            if (collectionElement == null)
-                                continue
-                            if (collectionElement::class.hasAnnotation<Element>())
-                                collectionElement.toXMLElement(elementParent)
+                property.annotations.forEach { annotation ->
+                    when (annotation) {
+                        is Element -> {
+                            
+                            fun determineElementParent(): XMLElement {
+                                return if (annotation.createParent)
+                                    XMLElement(annotation.tagName.ifEmpty { property.name }, null, mainElement)
+                                else
+                                    mainElement
+                            }
+                            
+                            val elementParent = determineElementParent()
+                            
+                            fun createChildElement(childObject: Any?) {
+                                if (childObject == null)
+                                    return
+                                if (childObject::class.hasAnnotation<Element>())
+                                    childObject.toXMLElement(elementParent)
+                                else
+                                    XMLElement(annotation.tagName.ifEmpty { property.name }, childObject.toString().transform(annotation.tagTextTransformer), elementParent)
+                            }
+                            
+                            if (property.returnType.isSubtypeOf(typeOf<Collection<*>>())) {
+                                val collection = property.call(this) as Collection<*>
+                                collection.forEach { createChildElement(it) }
+                            }
                             else
-                                XMLElement(property.name, elementAnnotation.tagTextTransformer.createInstance().transform(collectionElement.toString()), elementParent)
+                                createChildElement(property.call(this))
                         }
-                    }
-                    else {
-                        val propertyValue = property.call(this)
-                        if (propertyValue != null) {
-                            if (propertyValue::class.hasAnnotation<Element>())
-                                propertyValue.toXMLElement(elementParent)
-                            else
-                                XMLElement(elementAnnotation.tagName.ifEmpty { property.name }, elementAnnotation.tagTextTransformer.createInstance().transform(propertyStringValue), elementParent)
+                        is TagText -> {
+                            mainElement.setTagText(propertyStringValue.transform(classElementAnnotation.tagTextTransformer))
+                        }
+                        is Attribute -> {
+                            val attributeValue = propertyStringValue.transform(annotation.attributeTransformer)
+                            mainElement.addAttribute(annotation.name.ifEmpty { property.name }, attributeValue)
                         }
                     }
                 }
             }
-            element.children.sortWith(classElementAnnotation.elementSorting.createInstance())
-            return element
+            mainElement.children.sortWith(classElementAnnotation.elementSorting.createInstance())
+            return mainElement
         }
-        
-//        fun Any.toXMLElement(parent: XMLElement? = null): XMLElement {
-//
-//            this.validateXMLAnnotations()
-//            val classElementAnnotation = this::class.findAnnotation<Element>()!!
-//            val elementTagName = classElementAnnotation.tagName.ifEmpty { this::class.simpleName!! }
-//            val element = XMLElement(elementTagName, null, parent)
-//
-//            this::class.memberProperties.forEach { property ->
-//                val propertyStringValue = property.call(this).toString()
-//                if (property.hasAnnotation<Attribute>()) {
-//                    var attributeValue = propertyStringValue
-//                    attributeValue = property.findAnnotation<Attribute>()!!.attributeValueTransformer.createInstance().transform(attributeValue)
-//                    element.addAttribute(property.findAnnotation<Attribute>()!!.name.ifEmpty { property.name }, attributeValue)
-//                }
-//                else if (property.hasAnnotation<TagText>()) {
-//                    element.setTagText(classElementAnnotation.tagTextTransformer.createInstance().transform(propertyStringValue))
-//                }
-//                else if (property.hasAnnotation<Element>()) {
-//                    val elementAnnotation = property.findAnnotation<Element>()!!
-//                    val elementParent = if (elementAnnotation.createParent) XMLElement(elementAnnotation.tagName.ifEmpty { property.name }, null, element) else element
-//                    if (property.returnType.isSubtypeOf(typeOf<Collection<*>>())) {
-//                        val collection = property.call(this) as Collection<*>
-//                        for (collectionElement in collection) {
-//                            if (collectionElement == null)
-//                                continue
-//                            if (collectionElement::class.hasAnnotation<Element>())
-//                                collectionElement.toXMLElement(elementParent)
-//                            else
-//                                XMLElement(property.name, elementAnnotation.tagTextTransformer.createInstance().transform(collectionElement.toString()), elementParent)
-//                        }
-//                    }
-//                    else {
-//                        val propertyValue = property.call(this)
-//                        if (propertyValue != null) {
-//                            if (propertyValue::class.hasAnnotation<Element>())
-//                                propertyValue.toXMLElement(elementParent)
-//                            else
-//                                XMLElement(elementAnnotation.tagName.ifEmpty { property.name }, elementAnnotation.tagTextTransformer.createInstance().transform(propertyStringValue), elementParent)
-//                        }
-//                    }
-//                }
-//            }
-//            element.children.sortWith(classElementAnnotation.elementSorting.createInstance())
-//            return element
-//        }
     }
     
     /**
