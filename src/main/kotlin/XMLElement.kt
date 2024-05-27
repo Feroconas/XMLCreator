@@ -17,6 +17,18 @@ class XMLElement(
     
     companion object {
         
+        /**
+         * Checks if a given tag name is valid according to XML naming rules.
+         *
+         * A valid tag name must:
+         * 1. Be non-empty.
+         * 2. Start with a letter or an underscore ('_').
+         * 3. Contain only letters, digits, periods ('.'), underscores ('_'), or hyphens ('-') after the first character.
+         *
+         * @param tagName The tag name to validate.
+         * @return True if the tag name is valid, false otherwise.
+         */
+        
         fun isValidTagName(tagName: String): Boolean {
             return tagName.isNotEmpty()
             && (tagName[0].isLetter() || tagName[0] == '_')
@@ -24,6 +36,17 @@ class XMLElement(
                 it.isLetterOrDigit() || it == '.' || it == '_' || it == '-'
             }
         }
+        
+        /**
+         * Checks if a given tag text is valid.
+         *
+         * Valid tag text must be either:
+         * 1. Null.
+         * 2. Non-blank and must not contain the '<' character.
+         *
+         * @param tagText The tag text to validate.
+         * @return True if the tag text is valid, false otherwise.
+         */
         
         fun isValidTagText(tagText: String?): Boolean {
             return tagText == null || (tagText.isNotBlank() && !tagText.contains('<'))
@@ -123,31 +146,73 @@ class XMLElement(
 //        }
     }
     
+    /**
+     * @return The tag name.
+     */
+    
     fun getTagName(): String {
         return tagName
     }
+    
+    /**
+     * Sets the tag name of this XML element.
+     *
+     * @param tagName The new tag name to set.
+     * @throws IllegalArgumentException If the tag name is not valid.
+     */
     
     fun setTagName(tagName: String) {
         require(isValidTagName(tagName))
         this.tagName = tagName
     }
     
+    /**
+     * @return The tag text as a String, or null if there is no tag text.
+     */
+    
     fun getTagText(): String? {
         return tagText
     }
+    
+    /**
+     * Sets the tag text of this XML element.
+     *
+     * @param tagText The new tag text to set.
+     * @throws IllegalArgumentException If the tag text is not valid.
+     */
     
     fun setTagText(tagText: String?) {
         require(isValidTagText(tagText))
         this.tagText = tagText
     }
     
+    /**
+     * Gets the parent of this XML element.
+     *
+     * @return The parent XML element, or null if this element has no parent.
+     */
+    
     fun getParent(): XMLElement? {
         return parent
     }
     
+    /**
+     * Gets the attributes of this XML element.
+     *
+     * @return A mutable list of XMLAttribute objects.
+     */
+    
     fun getAttributes(): MutableList<XMLAttribute> {
         return attributes
     }
+    
+    /**
+     * Adds an attribute to this XML element.
+     *
+     * @param name The name of the attribute.
+     * @param value The value of the attribute.
+     * @return True if the attribute was added, false if an attribute with the same name already exists.
+     */
     
     fun addAttribute(name: String, value: String): Boolean {
         if (attributes.none { it.getName() == name }) {
@@ -157,6 +222,14 @@ class XMLElement(
         return false
     }
     
+    /**
+     * Renames an attribute of this XML element.
+     *
+     * @param name The current name of the attribute.
+     * @param newName The new name for the attribute.
+     * @return True if the attribute was renamed, false if an attribute with the new name already exists or if the attribute was not found.
+     */
+    
     fun renameAttribute(name: String, newName: String): Boolean {
         if (attributes.any { it.getName() == newName })
             return false
@@ -165,19 +238,47 @@ class XMLElement(
         return true
     }
     
+    /**
+     * Sets the value of an attribute of this XML element.
+     *
+     * @param name The name of the attribute.
+     * @param newValue The new value for the attribute.
+     * @return True if the attribute value was set, false if the attribute was not found.
+     */
+    
     fun setAttributeValue(name: String, newValue: String): Boolean {
         val attribute: XMLAttribute = attributes.find { it.getName() == name } ?: return false
         attribute.setValue(newValue)
         return true
     }
     
+    /**
+     * Removes an attribute from this XML element.
+     *
+     * @param name The name of the attribute to remove.
+     * @return True if the attribute was removed, false if the attribute was not found.
+     */
+    
     fun removeAttribute(name: String): Boolean {
         return attributes.remove(attributes.find { it.getName() == name })
     }
     
+    /**
+     * Gets the children of this XML element.
+     *
+     * @return A mutable list of child XML elements.
+     */
+    
     fun getChildren(): MutableList<XMLElement> {
         return children
     }
+    
+    /**
+     * Removes a child element from this XML element.
+     *
+     * @param child The child element to remove.
+     * @return True if the child was removed, false if the child was not found.
+     */
     
     fun removeChild(child: XMLElement): Boolean {
         if (children.remove(child)) {
@@ -187,12 +288,22 @@ class XMLElement(
         return false
     }
     
+    /**
+     * Accepts a visitor function to visit this element and all its children.
+     *
+     * @param visitor The visitor function to apply to this element and its children.
+     */
+    
     fun accept(visitor: (XMLElement) -> Unit) {
         children.forEach {
             it.accept(visitor)
         }
         visitor(this)
     }
+    
+    /**
+     * @return The XML representation as a String.
+     */
     
     override fun toString(): String {
         

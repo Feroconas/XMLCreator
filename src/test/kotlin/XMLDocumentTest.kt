@@ -45,7 +45,10 @@ class XMLDocumentTest {
         "\t\t</avaliacao>\n" +
         "\t</fuc>\n" +
         "</plano>"
-
+    
+    /**
+     * Adds attributes to XML elements before each test.
+     */
     @BeforeEach
     fun addAttributes() {
         fucElement1.addAttribute("codigo", "M4310")
@@ -61,7 +64,10 @@ class XMLDocumentTest {
         componente5.addAttribute("nome", "Discussão")
         componente5.addAttribute("peso", "20%")
     }
-
+    
+    /**
+     * Tests the getters and setters of the XMLDocument class.
+     */
     @Test
     fun gettersAndSetters() {
         assertEquals(planoElement, document.root)
@@ -72,22 +78,28 @@ class XMLDocumentTest {
         document.setEncoding("ASCII")
         assertEquals(document.getEncoding(), "ASCII")
     }
-
+    
+    /**
+     * Tests adding an attribute globally to elements.
+     */
     @Test
     fun addAttributeGlobally() {
         document.addAttributeGlobally("nao_existe", "teste", "teste")
         assertEquals(document.toString(), originalDocumentString)
-
+        
         document.addAttributeGlobally("componente", "nome", "teste")
         assertEquals(document.toString(), originalDocumentString)
-
+        
         document.addAttributeGlobally("ects", "teste", "teste")
         val correctDocumentString = originalDocumentString
             .replace("<ects>6.0</ects>", "<ects teste=\"teste\">6.0</ects>")
             .replace("<ects>42.0</ects>", "<ects teste=\"teste\">42.0</ects>")
         assertEquals(correctDocumentString, document.toString())
     }
-
+    
+    /**
+     * Tests renaming an attribute globally across all elements.
+     */
     @Test
     fun renameAttributeGlobally() {
         document.renameAttributeGlobally("nome", "peso")
@@ -98,7 +110,10 @@ class XMLDocumentTest {
         val correctDocumentString = originalDocumentString.replace("peso=", "pesagem=")
         assertEquals(correctDocumentString, document.toString())
     }
-
+    
+    /**
+     * Tests removing an attribute globally from all elements.
+     */
     @Test
     fun removeAttributeGlobally() {
         document.removeAttributeGlobally("nao_existe")
@@ -107,7 +122,10 @@ class XMLDocumentTest {
         val correctDocumentString = originalDocumentString.replace(Regex(" peso=\"\\d+%\""), "")
         assertEquals(correctDocumentString, document.toString())
     }
-
+    
+    /**
+     * Tests renaming elements with a specific tag name globally.
+     */
     @Test
     fun renameElementGlobally() {
         document.renameElementGlobally("nao_existe", "teste")
@@ -116,7 +134,10 @@ class XMLDocumentTest {
         val correctDocumentString = originalDocumentString.replace("componente", "teste")
         assertEquals(correctDocumentString, document.toString())
     }
-
+    
+    /**
+     * Tests removing elements with a specific tag name globally.
+     */
     @Test
     fun removeElementGlobally() {
         document.removeElementGlobally("nao_existe")
@@ -125,26 +146,29 @@ class XMLDocumentTest {
         val correctDocumentString = originalDocumentString
             .replace(
                 "\t\t\t<componente nome=\"Quizzes\" peso=\"20%\"/>\n" +
-                    "\t\t\t<componente nome=\"Projeto\" peso=\"80%\"/>\n", ""
+                "\t\t\t<componente nome=\"Projeto\" peso=\"80%\"/>\n", ""
             )
             .replace(
                 "\t\t\t<componente nome=\"Dissertação\" peso=\"60%\"/>\n" +
-                    "\t\t\t<componente nome=\"Apresentação\" peso=\"20%\"/>\n" +
-                    "\t\t\t<componente nome=\"Discussão\" peso=\"20%\"/>\n", ""
+                "\t\t\t<componente nome=\"Apresentação\" peso=\"20%\"/>\n" +
+                "\t\t\t<componente nome=\"Discussão\" peso=\"20%\"/>\n", ""
             )
             .replace(
                 "<avaliacao>\n" +
-                    "\t\t</avaliacao>", "<avaliacao/>"
+                "\t\t</avaliacao>", "<avaliacao/>"
             )
         assertEquals(correctDocumentString, document.toString())
         document.removeElementGlobally("fuc")
         val correctDocumentString2 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<plano>\n" +
-            "\t<curso>Mestrado em Engenharia Informática</curso>\n" +
-            "</plano>"
+        "<plano>\n" +
+        "\t<curso>Mestrado em Engenharia Informática</curso>\n" +
+        "</plano>"
         assertEquals(correctDocumentString2, document.toString())
     }
-
+    
+    /**
+     * Tests saving the XML document to a file.
+     */
     @Test
     fun saveToFile() {
         document.saveToFile("test.xml")
@@ -152,7 +176,10 @@ class XMLDocumentTest {
         val documentString: String = reader.use { it.readText() }
         assertEquals(originalDocumentString, documentString)
     }
-
+    
+    /**
+     * Tests the `toString` method of the XMLDocument class.
+     */
     @Test
     fun testToString() {
         assertEquals(originalDocumentString, document.toString())
@@ -165,13 +192,16 @@ class XMLDocumentTest {
         child.addAttribute("ano", "2020")
         assertEquals(
             "<?xml version=\"1.1\" encoding=\"UTF-16\"?>\n" +
-                "<teste>\n" +
-                "\t<curso ano=\"2020\">Engenharia Eletrónica</curso>\n" +
-                "</teste>",
+            "<teste>\n" +
+            "\t<curso ano=\"2020\">Engenharia Eletrónica</curso>\n" +
+            "</teste>",
             newDocument.toString()
         )
     }
-
+    
+    /**
+     * Tests finding elements by an XPath expression.
+     */
     @Test
     fun findElementsByXPath() {
         assertEquals(listOf<XMLElement>(), document.findElementsByXPath(""))

@@ -21,6 +21,9 @@ class XMLElementTest {
     private val netoPlano2 = XMLElement("neto2", parent = filhoPlano)
     private val bisnetoPlano = XMLElement("bisneto", "bisneto_tag", parent = netoPlano)
     
+    /**
+     * Tests the getters and setters of the XMLElement class.
+     */
     @Test
     fun gettersAndSetters() {
         assertEquals("plano", planoElement.getTagName())
@@ -40,6 +43,9 @@ class XMLElementTest {
         assertEquals(filhoPlano, planoElement.getChildren()[1])
     }
     
+    /**
+     * Tests the validation of tag names and tag texts in the XMLElement class.
+     */
     @Test
     fun tagNameAndTagTextValidation() {
         assertThrows(IllegalArgumentException::class.java) { planoElement.setTagName("") }
@@ -57,6 +63,9 @@ class XMLElementTest {
         assertDoesNotThrow { planoElement.setTagText("81n  flP-.,+º´«'fd>'") }
     }
     
+    /**
+     * Tests the validation of attributes in the XMLElement class.
+     */
     @Test
     fun attributeValidation() {
         assertThrows(IllegalArgumentException::class.java) { cursoElement.addAttribute("", "2024") }
@@ -77,6 +86,9 @@ class XMLElementTest {
         assertThrows(IllegalArgumentException::class.java) { cursoElement.setAttributeValue("_ano", "2024\"2024") }
     }
     
+    /**
+     * Tests removing a child element from its parent.
+     */
     @Test
     fun removeChild() {
         assertFalse(planoElement.removeChild(netoPlano))
@@ -89,6 +101,9 @@ class XMLElementTest {
         assertNotNull(cursoElement.getParent())
     }
     
+    /**
+     * Tests adding an attribute to an XML element.
+     */
     @Test
     fun addAttribute() {
         assertTrue(cursoElement.addAttribute("ano", "2023"))
@@ -97,6 +112,9 @@ class XMLElementTest {
         assertEquals(XMLAttribute("ano", "2023"), cursoElement.getAttributes()[0])
     }
     
+    /**
+     * Tests renaming an attribute of an XML element.
+     */
     @Test
     fun renameAttribute() {
         assertFalse(cursoElement.renameAttribute("ano", "anoNovo"))
@@ -109,6 +127,9 @@ class XMLElementTest {
         assertEquals(XMLAttribute("anoNovo", "2023"), cursoElement.getAttributes()[0])
     }
     
+    /**
+     * Tests setting the value of an attribute in an XML element.
+     */
     @Test
     fun setAttributeValue() {
         assertFalse(cursoElement.setAttributeValue("ano", "2024"))
@@ -119,6 +140,9 @@ class XMLElementTest {
         assertEquals(XMLAttribute("ano", "2024"), cursoElement.getAttributes()[0])
     }
     
+    /**
+     * Tests removing an attribute from an XML element.
+     */
     @Test
     fun removeAttribute() {
         assertFalse(cursoElement.removeAttribute("ano"))

@@ -1,5 +1,7 @@
 @file:Suppress("unused")
 
+import kotlin.reflect.KClass
+
 @Element("fuc")
 class FUC1(
     @Attribute("codigo")
@@ -32,6 +34,30 @@ class FUC2(
     val observations: String,
     @Element(tagName = "avaliacao")
     val evaluation: List<EvaluationComponent2>
+)
+@Element("fuc")
+class FUC3(
+    @TagText
+    val name: String,
+    @Element(createParent = true)
+    val evaluation: List<String>,
+    @Element(tagTextTransformer = AddPercentage::class)
+    val tagTextTransformer: Int
+)
+@Element
+class EmptyClass
+
+@Element
+class InvalidClass(
+    @TagText @Element
+    val name:String
+)
+
+class InvalidClass2(
+    @TagText
+    val name: String,
+    @TagText
+    val invalid: String
 )
 
 @Element("componente")
