@@ -21,8 +21,7 @@ class EvaluationComponent1(
     val weight: Int
 )
 
-@Element("fuc")
-@ElementTransform(CustomElementSort::class)
+@Element("fuc", elementSorting = CustomElementSort::class)
 class FUC2(
     @Attribute("codigo")
     val code: String,
@@ -39,20 +38,22 @@ class FUC2(
 class EvaluationComponent2(
     @Attribute(name = "nome")
     val name: String,
-    @Attribute(name = "peso")
-    @AttributeTransform(AddPercentage::class)
+    @Attribute(name = "peso", AddPercentage::class)
     val weight: Int
 )
 
-class CustomElementSort : XMLElementTransform {
-    override fun transform(element: XMLElement) {
-        element.getChildren().sortWith { element1, element2 ->
-            if (element1.getTagName() == "componente") 1 else element1.getTagName().compareTo(element2.getTagName())
-        }
+class CustomElementSort : Comparator<XMLElement> {
+    
+    private val tagNameOrder = listOf("nome", "ects", "avaliacao", "componente")
+    
+    override fun compare(element1: XMLElement, element2: XMLElement): Int {
+        val tagName1 = tagNameOrder.indexOf(element1.getTagName())
+        val tagName2 = tagNameOrder.indexOf(element2.getTagName())
+        return tagName1.compareTo(tagName2)
     }
 }
 
-class AddPercentage : XMLStringTransform {
+class AddPercentage : StringTransformer {
     override fun transform(inputString: String): String {
         return "$inputString%"
     }
