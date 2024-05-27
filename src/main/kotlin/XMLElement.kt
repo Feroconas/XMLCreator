@@ -1,4 +1,3 @@
-
 import kotlin.reflect.full.*
 import kotlin.reflect.typeOf
 
@@ -62,8 +61,8 @@ class XMLElement(
                                 XMLElement(property.name, elementAnnotation.tagTextTransformer.createInstance().transform(collectionElement.toString()), elementParent)
                         }
                     }
-                    else{
-                    val propertyValue = property.call(this)
+                    else {
+                        val propertyValue = property.call(this)
                         if (propertyValue != null) {
                             if (propertyValue::class.hasAnnotation<Element>())
                                 propertyValue.toXMLElement(elementParent)
@@ -76,6 +75,52 @@ class XMLElement(
             element.children.sortWith(classElementAnnotation.elementSorting.createInstance())
             return element
         }
+        
+//        fun Any.toXMLElement(parent: XMLElement? = null): XMLElement {
+//
+//            this.validateXMLAnnotations()
+//            val classElementAnnotation = this::class.findAnnotation<Element>()!!
+//            val elementTagName = classElementAnnotation.tagName.ifEmpty { this::class.simpleName!! }
+//            val element = XMLElement(elementTagName, null, parent)
+//
+//            this::class.memberProperties.forEach { property ->
+//                val propertyStringValue = property.call(this).toString()
+//                if (property.hasAnnotation<Attribute>()) {
+//                    var attributeValue = propertyStringValue
+//                    attributeValue = property.findAnnotation<Attribute>()!!.attributeValueTransformer.createInstance().transform(attributeValue)
+//                    element.addAttribute(property.findAnnotation<Attribute>()!!.name.ifEmpty { property.name }, attributeValue)
+//                }
+//                else if (property.hasAnnotation<TagText>()) {
+//                    element.setTagText(classElementAnnotation.tagTextTransformer.createInstance().transform(propertyStringValue))
+//                }
+//                else if (property.hasAnnotation<Element>()) {
+//                    val elementAnnotation = property.findAnnotation<Element>()!!
+//                    val elementParent = if (elementAnnotation.createParent) XMLElement(elementAnnotation.tagName.ifEmpty { property.name }, null, element) else element
+//                    if (property.returnType.isSubtypeOf(typeOf<Collection<*>>())) {
+//                        val collection = property.call(this) as Collection<*>
+//                        for (collectionElement in collection) {
+//                            if (collectionElement == null)
+//                                continue
+//                            if (collectionElement::class.hasAnnotation<Element>())
+//                                collectionElement.toXMLElement(elementParent)
+//                            else
+//                                XMLElement(property.name, elementAnnotation.tagTextTransformer.createInstance().transform(collectionElement.toString()), elementParent)
+//                        }
+//                    }
+//                    else {
+//                        val propertyValue = property.call(this)
+//                        if (propertyValue != null) {
+//                            if (propertyValue::class.hasAnnotation<Element>())
+//                                propertyValue.toXMLElement(elementParent)
+//                            else
+//                                XMLElement(elementAnnotation.tagName.ifEmpty { property.name }, elementAnnotation.tagTextTransformer.createInstance().transform(propertyStringValue), elementParent)
+//                        }
+//                    }
+//                }
+//            }
+//            element.children.sortWith(classElementAnnotation.elementSorting.createInstance())
+//            return element
+//        }
     }
     
     fun getTagName(): String {
