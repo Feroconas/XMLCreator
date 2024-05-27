@@ -19,11 +19,18 @@ import kotlin.reflect.full.memberProperties
  *
  * @property tagName The tag name of the XML element. If not provided or empty, class name or property name is used, depending on
  * whether it was applied to a class or a property. Not relevant in case 2 unless [createParent] is true.
+ * @property tagTextTransformer TODO EXPLICAR TODO EXPLICAR
+ * @property elementSorting TODO EXPLICAR TODO EXPLICAR
  * @property createParent If true, an additional is created between the parent and the child/children. Only relevant in case 2.
  */
 
 @Target(AnnotationTarget.CLASS, AnnotationTarget.PROPERTY)
-annotation class Element(val tagName: String = "", val createParent: Boolean = false)
+annotation class Element(
+    val tagName: String = "",
+    val createParent: Boolean = false,
+    val tagTextTransformer: KClass<out StringTransformer> = NoStringTransformer::class,
+    val elementSorting: KClass<out Comparator<XMLElement>> = NoElementSorting::class
+)
 
 /**
  * Marks the value of a property as the tag text of an XML element.
@@ -42,35 +49,12 @@ annotation class TagText
  * Must be applied to a property in a class annotated with [Element].
  *
  * @property name The attribute's name. If not provided or empty, the name of the property is used.
+ * @property attributeValueTransformer The class with the transform to be applied on the attribute's value.
+ * By default, no transform is applied.
  */
 
 @Target(AnnotationTarget.PROPERTY)
-annotation class Attribute(val name: String = "")
-
-/**
- * Specifies a transformation to be performed on the [XMLElement] to be created based on a class with the [Element] annotation.
- *
- * Must be applied to a class annotated with [Element].
- *
- * @property elementTransform The [XMLElementTransform] to be applied to the [XMLElement]. Note that the transform is performed
- * after all its children are created.
- */
-
-@Repeatable
-@Target(AnnotationTarget.CLASS)
-annotation class ElementTransform(val elementTransform: KClass<out XMLElementTransform>)
-
-/**
- * Specifies a transformation to be performed on the value of an XML attribute.
- *
- * Must be applied to a property with the [Attribute] annotation.
- *
- * @property stringTransform The [XMLStringTransform] to be applied to the attribute's value.
- */
-
-@Repeatable
-@Target(AnnotationTarget.PROPERTY)
-annotation class AttributeTransform(val stringTransform: KClass<out XMLStringTransform>)
+annotation class Attribute(val name: String = "", val attributeValueTransformer: KClass<out StringTransformer> = NoStringTransformer::class)
 
 class AnnotationConfigurationException(message: String) : Exception(message)
 

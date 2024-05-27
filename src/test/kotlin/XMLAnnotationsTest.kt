@@ -16,8 +16,9 @@ class XMLAnnotationsTest {
     
     @Test
     fun fucToXMLElement() {
-        fuc1.toXMLElement()
-        fuc2.toXMLElement()
-        assertThrows<IllegalArgumentException> { "4234".toXMLElement() }
+        println(fuc1.toXMLElement())
+        println("\n----\n")
+        println(fuc2.toXMLElement())
+        assertThrows<AnnotationConfigurationException> { "4234".toXMLElement() }
     }
 }
