@@ -19,8 +19,10 @@ import kotlin.reflect.full.memberProperties
  *
  * @property tagName The tag name of the XML element. If not provided or empty, class name or property name is used, depending on
  * whether it was applied to a class or a property. Not relevant in case 2 unless [createParent] is true.
- * @property tagTextTransformer TODO EXPLICAR TODO EXPLICAR
- * @property elementSorting TODO EXPLICAR TODO EXPLICAR
+ * @property tagTextTransformer Specifies a string transformation to apply on the element's tag text.
+ * By default, no transform is applied. Only relevant if the element has tag text.
+ * @property elementSorting Specifies how the element's children should be sorted. By default, the elements are ordered based on the
+ * class properties' names. Only relevant in case 1.
  * @property createParent If true, an additional is created between the parent and the child/children. Only relevant in case 2.
  */
 
@@ -42,9 +44,7 @@ annotation class Element(
 annotation class TagText
 
 /**
- * Marks a property as an attribute of an XML element.
- *
- * The value of the property dictates the attribute's value.
+ * Marks a property as an attribute of an XML element. The value of the property dictates the attribute's value.
  *
  * Must be applied to a property in a class annotated with [Element].
  *
