@@ -73,7 +73,7 @@ Represents an XML document with a root element, version, and encoding.
 ## Micro-XPath
 
 XPath uses path expressions to select nodes or node-sets in an XML document.
-These path expressions look very much like the path expressions you use with traditional computer file systems.
+These path expressions look similar to the path expressions you use with traditional computer file systems.
 
 ### Example:
 
