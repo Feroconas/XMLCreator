@@ -1,5 +1,7 @@
+import XMLElement.Companion.and
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class XMLElementTest {
     
@@ -150,5 +152,44 @@ class XMLElementTest {
         cursoElement.addAttribute("mes", "2")
         assertTrue(cursoElement.removeAttribute("mes"))
         assertEquals(1, cursoElement.getAttributes().size)
+    }
+    
+    @Test
+    fun domainSpecificLanguage() {
+        val element1 =
+            XMLElement.createElement("menu") {
+                element("hamburguer") {
+                    element("tipo", "Normal")
+                    element("ingrediente", attributes = "nome" to "carne")
+                    element("ingrediente", "muito fresca", attributes = ("nome" to "alface") and ("cor" to "verde"))
+                    element("ingrediente", attributes = ("nome" to "queijo") and ("cor" to "amarelo"))
+                }
+                element("sandes") {
+                    element("tipo", "Oferta Especial")
+                    element("ingrediente", attributes = ("nome" to "queijo") and ("cor" to "amarelo") and ("tipo" to "cheddar"))
+                    element("ingrediente", attributes = ("nome" to "pao"))
+                }
+            }
+        
+        assertEquals(
+            "<menu>\n" +
+            "\t<hamburguer>\n" +
+            "\t\t<tipo>Normal</tipo>\n" +
+            "\t\t<ingrediente nome=\"carne\"/>\n" +
+            "\t\t<ingrediente nome=\"alface\" cor=\"verde\">muito fresca</ingrediente>\n" +
+            "\t\t<ingrediente nome=\"queijo\" cor=\"amarelo\"/>\n" +
+            "\t</hamburguer>\n" +
+            "\t<sandes>\n" +
+            "\t\t<tipo>Oferta Especial</tipo>\n" +
+            "\t\t<ingrediente nome=\"queijo\" cor=\"amarelo\" tipo=\"cheddar\"/>\n" +
+            "\t\t<ingrediente nome=\"pao\"/>\n" +
+            "\t</sandes>\n" +
+            "</menu>", element1.toString()
+        )
+        
+        assertEquals("<ingrediente nome=\"queijo\" cor=\"amarelo\"/>", element1[0][3].toString())
+        assertThrows<IndexOutOfBoundsException> {element1[0][4].toString()}
+        val element2 = XMLElement.createElement("teste", "tagText", "name" to "value")
+        assertEquals("<teste name=\"value\">tagText</teste>", element2.toString())
     }
 }

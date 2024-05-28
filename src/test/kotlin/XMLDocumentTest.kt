@@ -1,4 +1,4 @@
-
+import XMLElement.Companion.and
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -6,7 +6,7 @@ import java.io.File
 
 @Suppress("unused")
 class XMLDocumentTest {
-
+    
     private val planoElement = XMLElement("plano")
     private val cursoElement = XMLElement("curso", "Mestrado em Engenharia Informática", planoElement)
     private val fucElement1 = XMLElement("fuc", parent = planoElement)
@@ -22,29 +22,29 @@ class XMLDocumentTest {
     private val componente3 = XMLElement("componente", parent = avaliacao2)
     private val componente4 = XMLElement("componente", parent = avaliacao2)
     private val componente5 = XMLElement("componente", parent = avaliacao2)
-
+    
     private val document = XMLDocument(planoElement)
     private val originalDocumentString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-        "<plano>\n" +
-        "\t<curso>Mestrado em Engenharia Informática</curso>\n" +
-        "\t<fuc codigo=\"M4310\">\n" +
-        "\t\t<nome>Programação Avançada</nome>\n" +
-        "\t\t<ects>6.0</ects>\n" +
-        "\t\t<avaliacao>\n" +
-        "\t\t\t<componente nome=\"Quizzes\" peso=\"20%\"/>\n" +
-        "\t\t\t<componente nome=\"Projeto\" peso=\"80%\"/>\n" +
-        "\t\t</avaliacao>\n" +
-        "\t</fuc>\n" +
-        "\t<fuc codigo=\"03782\">\n" +
-        "\t\t<nome>Dissertação</nome>\n" +
-        "\t\t<ects>42.0</ects>\n" +
-        "\t\t<avaliacao>\n" +
-        "\t\t\t<componente nome=\"Dissertação\" peso=\"60%\"/>\n" +
-        "\t\t\t<componente nome=\"Apresentação\" peso=\"20%\"/>\n" +
-        "\t\t\t<componente nome=\"Discussão\" peso=\"20%\"/>\n" +
-        "\t\t</avaliacao>\n" +
-        "\t</fuc>\n" +
-        "</plano>"
+    "<plano>\n" +
+    "\t<curso>Mestrado em Engenharia Informática</curso>\n" +
+    "\t<fuc codigo=\"M4310\">\n" +
+    "\t\t<nome>Programação Avançada</nome>\n" +
+    "\t\t<ects>6.0</ects>\n" +
+    "\t\t<avaliacao>\n" +
+    "\t\t\t<componente nome=\"Quizzes\" peso=\"20%\"/>\n" +
+    "\t\t\t<componente nome=\"Projeto\" peso=\"80%\"/>\n" +
+    "\t\t</avaliacao>\n" +
+    "\t</fuc>\n" +
+    "\t<fuc codigo=\"03782\">\n" +
+    "\t\t<nome>Dissertação</nome>\n" +
+    "\t\t<ects>42.0</ects>\n" +
+    "\t\t<avaliacao>\n" +
+    "\t\t\t<componente nome=\"Dissertação\" peso=\"60%\"/>\n" +
+    "\t\t\t<componente nome=\"Apresentação\" peso=\"20%\"/>\n" +
+    "\t\t\t<componente nome=\"Discussão\" peso=\"20%\"/>\n" +
+    "\t\t</avaliacao>\n" +
+    "\t</fuc>\n" +
+    "</plano>"
     
     /**
      * Adds attributes to XML elements before each test.
@@ -212,5 +212,31 @@ class XMLDocumentTest {
             listOf(componente1, componente2, componente3, componente4, componente5),
             document.findElementsByXPath("fuc/avaliacao/componente")
         )
+    }
+    
+    @Test
+    fun domainSpecificLanguage() {
+        val document = XMLDocument(version = "1.0", encoding = "UTF-8",
+            XMLElement.createElement("plano") {
+                element("curso", "Mestrado em Engenharia Informática")
+                element("fuc", attributes = "codigo" to "M4310") {
+                    element("nome", "Programação Avançada")
+                    element("ects", "6.0")
+                    element("avaliacao") {
+                        element("componente", attributes = "nome" to "Quizzes" and ("peso" to "20%"))
+                        element("componente", attributes = "nome" to "Projeto" and ("peso" to "80%"))
+                    }
+                }
+                element("fuc", attributes = "codigo" to "03782") {
+                    element("nome", "Dissertação")
+                    element("ects", "42.0")
+                    element("avaliacao") {
+                        element("componente", attributes = "nome" to "Dissertação" and ("peso" to "60%"))
+                        element("componente", attributes = "nome" to "Apresentação" and ("peso" to "20%"))
+                        element("componente", attributes = "nome" to "Discussão" and ("peso" to "20%"))
+                    }
+                }
+            })
+        assertEquals(originalDocumentString, document.toString())
     }
 }

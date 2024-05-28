@@ -11,10 +11,18 @@ class XMLDocument(val root: XMLElement) {
     private val version: XMLAttribute = XMLAttribute("version", DEFAULT_VERSION)
     private val encoding: XMLAttribute = XMLAttribute("encoding", DEFAULT_ENCODING)
     
+    constructor(version: String, encoding: String, root: XMLElement) : this(root) {
+        setVersion(version)
+        setEncoding(encoding)
+    }
+    
     companion object {
         const val DEFAULT_VERSION = "1.0"
         const val DEFAULT_ENCODING = "UTF-8"
     }
+    
+    // Primary constructor
+
     
     /**
      * Gets the version of the XML document.

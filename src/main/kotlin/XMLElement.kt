@@ -1,6 +1,6 @@
+import kotlin.reflect.KClass
 import kotlin.reflect.full.*
 import kotlin.reflect.typeOf
-import kotlin.reflect.KClass
 
 /**
  * Represents an XML element with a tag name, optional tag text, and a parent element.
@@ -81,7 +81,7 @@ class XMLElement(
             val mainElementTagName = classElementAnnotation.tagName.ifEmpty { this::class.simpleName!! }
             val mainElement = XMLElement(mainElementTagName, null, parent)
             
-            fun String.transform(transformer: KClass<out StringTransformer>): String {
+            fun String.transformUsing(transformer: KClass<out StringTransformer>): String {
                 return transformer.createInstance().transform(this)
             }
             
@@ -106,7 +106,11 @@ class XMLElement(
                                 if (childObject::class.hasAnnotation<Element>())
                                     childObject.toXMLElement(elementParent)
                                 else
-                                    XMLElement(annotation.tagName.ifEmpty { property.name }, childObject.toString().transform(annotation.tagTextTransformer), elementParent)
+                                    XMLElement(
+                                        annotation.tagName.ifEmpty { property.name },
+                                        childObject.toString().transformUsing(annotation.tagTextTransformer),
+                                        elementParent
+                                    )
                             }
                             
                             if (property.returnType.isSubtypeOf(typeOf<Collection<*>>())) {
@@ -116,11 +120,13 @@ class XMLElement(
                             else
                                 createChildElement(property.call(this))
                         }
+                        
                         is TagText -> {
-                            mainElement.setTagText(propertyStringValue.transform(classElementAnnotation.tagTextTransformer))
+                            mainElement.setTagText(propertyStringValue.transformUsing(classElementAnnotation.tagTextTransformer))
                         }
+                        
                         is Attribute -> {
-                            val attributeValue = propertyStringValue.transform(annotation.attributeTransformer)
+                            val attributeValue = propertyStringValue.transformUsing(annotation.attributeTransformer)
                             mainElement.addAttribute(annotation.name.ifEmpty { property.name }, attributeValue)
                         }
                     }
@@ -128,6 +134,38 @@ class XMLElement(
             }
             mainElement.children.sortWith(classElementAnnotation.elementSorting.createInstance())
             return mainElement
+        }
+        
+        fun createElement(
+            tagName: String,
+            tagText: String? = null,
+            attributes: MutableList<Pair<String, String>> = mutableListOf(),
+            build: XMLElement.() -> Unit = {}
+        ): XMLElement {
+            
+            val element = XMLElement(tagName, tagText, null)
+            attributes.forEach {
+                element.addAttribute(it.first, it.second)
+            }
+            return element.apply { (build(this)) }
+        }
+        
+        fun createElement(
+            tagName: String,
+            tagText: String? = null,
+            attributes: Pair<String, String>,
+            build: XMLElement.() -> Unit = {}
+        ): XMLElement {
+            return createElement(tagName, tagText, mutableListOf(attributes), build)
+        }
+        
+        infix fun Pair<String, String>.and(other: Pair<String, String>): MutableList<Pair<String, String>> {
+            return mutableListOf(this, other)
+        }
+        
+        infix fun MutableList<Pair<String, String>>.and(other: Pair<String, String>): MutableList<Pair<String, String>> {
+            add(other)
+            return this
         }
     }
     
@@ -285,6 +323,31 @@ class XMLElement(
         }
         visitor(this)
     }
+    
+    fun element(
+        tagName: String,
+        tagText: String? = null,
+        attributes: Pair<String, String>,
+        build: XMLElement.() -> Unit = {}
+    ): XMLElement {
+        return element(tagName, tagText, mutableListOf(attributes), build)
+    }
+    
+    fun element(
+        tagName: String,
+        tagText: String? = null,
+        attributes: MutableList<Pair<String, String>> = mutableListOf(),
+        build: XMLElement.() -> Unit = {}
+    ): XMLElement {
+        
+        val element = XMLElement(tagName, tagText, this)
+        attributes.forEach {
+            element.addAttribute(it.first, it.second)
+        }
+        return element.apply { (build(this)) }
+    }
+    
+    operator fun get(index: Int): XMLElement = children[index]
     
     /**
      * @return The XML representation as a String.
