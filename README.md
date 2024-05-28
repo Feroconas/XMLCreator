@@ -50,8 +50,6 @@ Represents an attribute of an XML element.
 - **isValidValue(value: String): Boolean**: Validates whether a given value is a valid XML attribute value.
 - **getName()**: Returns the attribute name.
 - **getValue()**: Returns the attribute value.
-- **setName(name: String)**: Sets the attribute name.
-- **setValue(value: String)**: Sets the attribute value.
 
 ### XMLDocument
 Represents an XML document with a root element, version, and encoding.
