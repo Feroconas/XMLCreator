@@ -4,12 +4,12 @@
 This API allows you to define and manipulate XML elements using Kotlin annotations and classes. It provides a convenient way to convert Kotlin objects to XML. The API supports nested elements, attributes, tag text, and various customization options through annotations.
 
 ## Table of Contents
-- [Getting Started](#getting-started)
 - [Classes and Methods](#classes-and-methods)
   - [XMLElement](#xmlelement)
   - [XMLAttribute](#xmlattribute)
   - [XMLDocument](#xmldocument)
 - [Micro-XPath](#micro-xpath)
+- [Domain Specific Language](#domain-specific-language)
 - [Annotations](#annotations)
   - [@Element](#element)
   - [@TagText](#tagtext)
@@ -17,8 +17,6 @@ This API allows you to define and manipulate XML elements using Kotlin annotatio
 - [Examples](#examples)
 
 ---
-## Getting Started
-To use this API, add the necessary imports and apply the provided annotations to your Kotlin classes. 
 
 ## Classes and Methods
 
@@ -40,6 +38,12 @@ Represents an XML element with a tag name, optional tag text, attributes, and ch
 - **getChildren()**: Returns the children.
 - **addChild(child: XMLElement)**: Adds a child element.
 - **removeChild(child: XMLElement)**: Removes a child element.
+- **fun createElement(tagName: String, tagText: String? = null, attributes: MutableList<Pair<String, String>> = mutableListOf(), build: XMLElement.() -> Unit = {}): XMLElement**:Creates an XML element with the given tag name, optional tag text, multiple attributes, and an optional build action.
+- **fun createElement(tagName: String, tagText: String? = null, attributes: Pair<String, String>, build: XMLElement.() -> Unit = {}): XMLElement**: Convenience overload of createElement allowing the specification of a single attribute as a pair.
+- **infix fun Pair<String, String>.and(other: Pair<String, String>): MutableList<Pair<String, String>>**: Combines two attributes into a mutable list of pairs.
+- **infix fun MutableList<Pair<String, String>>.and(other: Pair<String, String>): MutableList<Pair<String, String>>**: Adds an attribute pair to an existing mutable list of attributes and returns the updated list.
+- **fun element(tagName: String,tagText: String? = null,attributes: Pair<String, String>,build: XMLElement.() -> Unit = {}): XMLElement**: Creates an XML element with the given tag name, optional tag text, a single attribute, and an optional build action.
+- **fun element(tagName: String,tagText: String? = null,attributes: MutableList<Pair<String, String>> = mutableListOf(),build: XMLElement.() -> Unit = {}): XMLElement**: Creates an XML element with the given tag name, optional tag text, multiple attributes, and an optional build action.
 
 ### XMLAttribute
 Represents an attribute of an XML element.
@@ -97,6 +101,61 @@ Lisbon/home/room - **Returns**:
 <room name="Hall" area="20"/>
 <room name="Garage" area="30"/>
 ```
+## Domain Specific Language
+Serves to instantiate XMLElements and XMLDocuments in an easier, more readable and natural way.
+
+### Example
+
+With the following **code**...
+```
+val document = XMLDocument(version = "1.0", encoding = "UTF-8",
+            XMLElement.createElement("plan") {
+                element("course", "Master in Computer Engineering")
+                element("unit", attributes = "code" to "M4310") {
+                    element("name", "Advanced Programming")
+                    element("credits", "6.0")
+                    element("evaluation") {
+                        element("component", attributes = "name" to "Quizzes" and ("weight" to "20%"))
+                        element("component", attributes = "name" to "Project" and ("weight" to "80%"))
+                    }
+                }
+                element("unit", attributes = "code" to "03782") {
+                    element("name", "Dissertation")
+                    element("credits", "42.0")
+                    element("evaluation") {
+                        element("component", attributes = "name" to "Dissertation" and ("weight" to "60%"))
+                        element("component", attributes = "name" to "Presentation" and ("weight" to "20%"))
+                        element("component", attributes = "name" to "Discussion" and ("weight" to "20%"))
+                    }
+                }
+            })
+```
+...you get this **XML FILE**
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<plan>
+    <course>Master in Computer Engineering</course>
+    <unit code="M4310">
+        <name>Advanced Programming</name>
+        <credits>6.0</credits>
+        <evaluation>
+            <component name="Quizzes" weight="20%"/>
+            <component name="Project" weight="80%"/>
+        </evaluation>
+    </unit>
+    <unit code="03782">
+        <name>Dissertation</name>
+        <credits>42.0</credits>
+        <evaluation>
+            <component name="Dissertation" weight="60%"/>
+            <component name="Presentation" weight="20%"/>
+            <component name="Discussion" weight="20%"/>
+        </evaluation>
+    </unit>
+</plan>
+```
+
 
 ## Annotations
 The API provides three primary annotations: **@Element**, **@TagText**, and **@Attribute**.
@@ -107,9 +166,9 @@ Marks a class or property as an XML element. It can be used to designate classes
 **Parameters:**
 
 - **tagName**: The tag name of the XML element. If not provided, the class or property name is used.
-- **createParent**: If true, creates an additional parent element (under some conditions, see documentation).
+- **createParent**: If true, creates an additional parent element.
 - **tagTextTransformer**: Specifies a transformer for the element's tag text.
-- **elementSorting**: Specifies how the element's children should be sorted (when this annotation is used in a class).
+- **elementSorting**: Specifies how the element's children should be sorted.
 
 **Example:**
 ```
