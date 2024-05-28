@@ -21,8 +21,6 @@ class XMLDocument(val root: XMLElement) {
         const val DEFAULT_ENCODING = "UTF-8"
     }
     
-    // Primary constructor
-
     
     /**
      * Gets the version of the XML document.
