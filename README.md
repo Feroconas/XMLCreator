@@ -107,7 +107,7 @@ Marks a class or property as an XML element. It can be used to designate classes
 **Parameters:**
 
 - **tagName**: The tag name of the XML element. If not provided, the class or property name is used.
-- **createParent**: If true, creates an additional parent element.
+- **createParent**: If true, creates an additional parent element (under some conditions, see documentation).
 - **tagTextTransformer**: Specifies a transformer for the element's tag text.
 - **elementSorting**: Specifies how the element's children should be sorted.
 
