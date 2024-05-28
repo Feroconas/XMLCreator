@@ -1,7 +1,7 @@
 # XML Creator API for Kotlin
 
 ## Overview
-This API allows you to define and manipulate XML elements using Kotlin annotations and classes. It provides a convenient way to convert Kotlin objects to XML and vice versa. The API supports nested elements, attributes, tag text, and various customization options through annotations.
+This API allows you to define and manipulate XML elements using Kotlin annotations and classes. It provides a convenient way to convert Kotlin objects to XML. The API supports nested elements, attributes, tag text, and various customization options through annotations.
 
 ## Table of Contents
 - [Getting Started](#getting-started)
