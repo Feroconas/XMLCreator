@@ -136,20 +136,37 @@ class XMLElement(
             return mainElement
         }
         
+        /**
+         * Creates an XML element with the given tag name, optional tag text, multiple attributes, and an optional build action.
+         *
+         * @param tagName The tag name of the element.
+         * @param tagText Optional text content for the element. Default is null.
+         * @param attributes A list of attributes as pairs of strings where each pair consists of an attribute name and its value. Default is an empty list.
+         * @param build An optional lambda to further configure the XMLElement. Default does nothing.
+         * @return The newly created XMLElement configured with specified tag name, attributes, and build action.
+         */
         fun createElement(
             tagName: String,
             tagText: String? = null,
             attributes: MutableList<Pair<String, String>> = mutableListOf(),
             build: XMLElement.() -> Unit = {}
         ): XMLElement {
-            
             val element = XMLElement(tagName, tagText, null)
             attributes.forEach {
                 element.addAttribute(it.first, it.second)
             }
-            return element.apply { (build(this)) }
+            return element.apply { build(this) }
         }
         
+        /**
+         * Convenience overload of createElement allowing the specification of a single attribute as a pair.
+         *
+         * @param tagName The tag name of the element.
+         * @param tagText Optional text content for the element. Default is null.
+         * @param attributes A single attribute as a Pair of strings where the first component is the attribute name and the second is its value.
+         * @param build An optional lambda to further configure the XMLElement. Default does nothing.
+         * @return The newly created XMLElement.
+         */
         fun createElement(
             tagName: String,
             tagText: String? = null,
@@ -159,14 +176,27 @@ class XMLElement(
             return createElement(tagName, tagText, mutableListOf(attributes), build)
         }
         
+        /**
+         * Combines two attributes into a mutable list of pairs.
+         *
+         * @param other The attribute pair to combine with this pair.
+         * @return A MutableList containing this pair and the other pair.
+         */
         infix fun Pair<String, String>.and(other: Pair<String, String>): MutableList<Pair<String, String>> {
             return mutableListOf(this, other)
         }
         
+        /**
+         * Adds an attribute pair to an existing mutable list of attributes and returns the updated list.
+         *
+         * @param other The attribute pair to add to the list.
+         * @return The updated MutableList of attributes containing the newly added pair.
+         */
         infix fun MutableList<Pair<String, String>>.and(other: Pair<String, String>): MutableList<Pair<String, String>> {
             add(other)
             return this
         }
+        
     }
     
     /**
@@ -324,6 +354,16 @@ class XMLElement(
         visitor(this)
     }
     
+    /**
+     * Creates an XML element with the given tag name, optional tag text, a single attribute, and an optional build action.
+     * This function is a convenience overload to create elements with just one attribute.
+     *
+     * @param tagName The tag name of the element.
+     * @param tagText Optional text content for the element. Default is null.
+     * @param attributes A single attribute as a Pair of strings where the first component is the attribute name and the second is its value.
+     * @param build An optional lambda to further configure the XMLElement. Default does nothing.
+     * @return The newly created XMLElement.
+     */
     fun element(
         tagName: String,
         tagText: String? = null,
@@ -333,20 +373,35 @@ class XMLElement(
         return element(tagName, tagText, mutableListOf(attributes), build)
     }
     
+    /**
+     * Creates an XML element with the given tag name, optional tag text, multiple attributes, and an optional build action.
+     *
+     * @param tagName The tag name of the element.
+     * @param tagText Optional text content for the element. Default is null.
+     * @param attributes A list of attributes as pairs of strings where each pair consists of an attribute name and its value. Default is an empty list.
+     * @param build An optional lambda to further configure the XMLElement. Default does nothing.
+     * @return The newly created XMLElement configured with specified tag name, attributes, and build action.
+     */
     fun element(
         tagName: String,
         tagText: String? = null,
         attributes: MutableList<Pair<String, String>> = mutableListOf(),
         build: XMLElement.() -> Unit = {}
     ): XMLElement {
-        
         val element = XMLElement(tagName, tagText, this)
         attributes.forEach {
             element.addAttribute(it.first, it.second)
         }
-        return element.apply { (build(this)) }
+        return element.apply { build(this) }
     }
     
+    /**
+     * Gets the child element at the specified index from this XML element's children.
+     *
+     * @param index The zero-based index of the child element to retrieve.
+     * @return The child element at the specified index.
+     * @throws IndexOutOfBoundsException If the index is out of bounds.
+     */
     operator fun get(index: Int): XMLElement = children[index]
     
     /**
