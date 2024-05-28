@@ -106,7 +106,7 @@ Serves to instantiate XMLElements and XMLDocuments in an easier, more readable a
 
 ### Example
 
-With the following **code**...
+The following **code** creates a XMLDocument corresponding to...
 ```
 val document = XMLDocument(version = "1.0", encoding = "UTF-8",
             XMLElement.createElement("plan") {
@@ -130,7 +130,7 @@ val document = XMLDocument(version = "1.0", encoding = "UTF-8",
                 }
             })
 ```
-...you get this **XML FILE**
+...the following **XML File**
 
 ```
 <?xml version="1.0" encoding="UTF-8"?>
