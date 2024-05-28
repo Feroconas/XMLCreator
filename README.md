@@ -73,12 +73,28 @@ Represents an XML document with a root element, version, and encoding.
 ## Micro-XPath
 
 XPath uses path expressions to select nodes or node-sets in an XML document.
-These path expressions look similar to the path expressions you use with traditional computer file systems.
+These path expressions look very much like the path expressions you use with traditional computer file systems.
 
 ### Example:
-
+**XML File:**
+```
+<Lisbon>
+    <Restaurant>Sem Montaditos</Restaurant>
+    <home number="1">
+        <room name="Bathroom" area="15"/>
+        <room name="Kitchen" area="60"/>
+    </home>
+    <home number="2">
+        <room name="Kitchen" area="55"/>
+        <room name="Hall" area="20"/>
+        <room name="Garage" area="30"/>
+    </home>
+</Lisbon>
+```
 Lisbon/home/room - **Returns**:
 ```
+<room name="Bathroom" area="30"/>
+<room name="Kitchen" area="60"/>
 <room name="Kitchen" area="55"/>
 <room name="Hall" area="20"/>
 <room name="Garage" area="30"/>
@@ -93,7 +109,7 @@ Marks a class or property as an XML element. It can be used to designate classes
 **Parameters:**
 
 - **tagName**: The tag name of the XML element. If not provided, the class or property name is used.
-- **createParent**: If true, creates an additional parent element (under some conditions, see documentation).
+- **createParent**: If true, creates an additional parent element.
 - **tagTextTransformer**: Specifies a transformer for the element's tag text.
 - **elementSorting**: Specifies how the element's children should be sorted.
 
