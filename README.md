@@ -74,7 +74,7 @@ XPath uses path expressions to select nodes or node-sets in an XML document.
 These path expressions look very much like the path expressions you use with traditional computer file systems.
 
 ### Example:
-**XML File:**
+**XML Structure:**
 ```
 <Lisbon>
     <Restaurant>Sem Montaditos</Restaurant>
